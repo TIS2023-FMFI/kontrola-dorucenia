@@ -31,7 +31,7 @@ workbook['column']
 Vráti n-ty riadok daného stĺpca 
 ```
 workbook['column'].iloc[n]
-``´
+```
 Úprava 7.11.23
 Django stránka bola upravená aby posielala email na rôzne adresy.
 Testovací email bude verejný :
