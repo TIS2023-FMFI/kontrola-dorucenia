@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'testing'
 ]
 
 MIDDLEWARE = [
@@ -121,3 +122,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.office365.com'  # Replace with your email provider's SMTP server
+EMAIL_PORT = 587  # Replace with the appropriate port for your email provider
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'testovaniepython@outlook.com'  # Your email address
+EMAIL_HOST_PASSWORD = 'tis_python'  # Your email password or app-specific password
