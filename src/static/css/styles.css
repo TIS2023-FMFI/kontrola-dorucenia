@@ -1,0 +1,38 @@
+header {
+	border-bottom: 1px solid #d9dad7;
+	vertical-align: text-bottom;
+}
+
+section{
+	color: #3b4754;
+	border-radius: 20px;
+	background-color: #edf0f4;
+	margin: 5em 20em 0em 20em;
+	padding: 2em 5em 5em 3em;
+	text-align: center;
+}
+fieldset{
+	border: 0em;
+}
+legend{
+	font-weight: bold;
+	font-size: 1.5em;
+	color: #29323d;
+}
+p{
+	padding-bottom: 0.3em;
+}
+
+input[type="text"],input[type="password"]{
+	border: 0.1em 0.1em 0.1em 0.1em;
+	border-color: #d9dad7;
+	border-radius: 8px;
+	height: 25px;
+	margin-top: 7px;
+}
+input[type="submit"]{
+	background-color: #29323d;
+	color: white;
+	border-radius: 20px;
+	padding: 1em 1em 1em 1em;
+}
