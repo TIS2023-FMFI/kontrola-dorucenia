@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %} Prihlásenie {% endblock %}
+
+{% block content %}
+<section>
+	<form method="post">
+		<fieldset>
+			<legend>Prihlásenie</legend>
+			<p><label for="mail">Emailová adresa:</label> <br> 
+			<input type="text" name="mail" id="mail" size="20" required></p>
+			<p><label for="password">Heslo:</label> <br> 
+			<input type="password" name="password" id="heslo" size="20" required></p>
+		</fieldset>
+		<p><input type="submit" name="prihlas" id="prihlas" value="PRIHLÁSIŤ SA"></p>
+	</form>
+	<a href="{{ url_for('reset_password') }}">Zabudli ste heslo?</a>
+</section>
+{% endblock %}
