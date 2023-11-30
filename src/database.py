@@ -1,4 +1,6 @@
 import sqlite3
+from flask_bcrypt import Bcrypt 
+
 
 try:
    
@@ -32,16 +34,21 @@ try:
                 estimated_time TIME,
                 comment TEXT);"""
 
+
+    hashed_password = Bcrypt().generate_password_hash('Admin Password')
+    
+
     create_admin = """INSERT INTO user(admin, name, email, password)
-                VALUES (true, 'Admin User', 'admin@example.com', 'password');"""
+                VALUES (true, ?, 'admin@example.com', ?);"""
     
     cursor.execute(table_user)
 
     cursor.execute(table_request)
 
     cursor.execute(table_response)
+    
+    cursor.execute(create_admin, ('Admin User', hashed_password))
 
-    cursor.execute(create_admin)
 
     connection.commit()
 
@@ -55,6 +62,9 @@ finally:
     
     if connection:
         connection.close()
+        
+        
+
 
 
         
