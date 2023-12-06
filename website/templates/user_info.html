@@ -1,11 +1,15 @@
-{% extends 'base.html' %}
-
-{% block title %} Stránka používateľa {% endblock %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
 {% block content %}
 <nav>
-	<a href="{{ url_for('main_page') }}">Poslať požiadavku</a>
-	<a href="{{ url_for('user') }}">Používateľ</a>
+	<a href="{{ url_for('views.home') }}">Poslať požiadavku</a>
+	<a href="{{ url_for('views.user') }}">Používateľ</a>
 	<a href="/logout">Odhlásiť sa</a>
 </nav>
 <hr>
@@ -20,9 +24,9 @@
 	<form method="post" action="/change_password_action">
 		<fieldset>
 			<legend>Zmena hesla</legend>
-			<p><label for="actual_password">Aktuálne heslo:</label> <br> 
+			<p><label for="actual_password">Aktuálne heslo:</label> <br>
 			<input type="password" name="actual_password" id="heslo" size="20" required></p>
-			<p><label for="new_password">Nové heslo:</label> <br> 
+			<p><label for="new_password">Nové heslo:</label> <br>
 			<input type="password" name="new_password" id="nove_heslo" size="20" required></p>
 		</fieldset>
 		<p><input type="submit" name="prihlas" id="prihlas" value="ZMENIŤ HESLO"></p>
@@ -34,11 +38,11 @@
 	<form method="post" action="/add_user_action">
 		<fieldset>
 			<legend>Pridanie nového používateľa</legend>
-			<p><label for="name">Meno:</label> <br> 
+			<p><label for="name">Meno:</label> <br>
 			<input type="text" name="name" id="name" size="20" required></p>
-			<p><label for="mail">Emailová adresa:</label> <br> 
+			<p><label for="mail">Emailová adresa:</label> <br>
 			<input type="text" name="mail" id="mail" size="20" required></p>
-			<p><label for="password">Heslo:</label> <br> 
+			<p><label for="password">Heslo:</label> <br>
 			<input type="password" name="password" id="heslo" size="20" required></p>
 			<p><input type="checkbox" name="admin" id="admin"> <label for="admin">Admin</label></p>
 		</fieldset>
@@ -56,13 +60,13 @@
 			<tr>
 				<th></th><th>ID</th><th>Admin</th><th>Meno</th><th>Email</th>
 			</tr>
-			
+
 			{% for user in users %}
 			<tr>
 				<td><input type="checkbox" name="users_to_delete" value={{ user[0] }}></td><td>{{ user[0] }}</td><td>{{ user[1] }}</td><td>{{ user[2] }}</td><td>{{ user[3] }}</td>
 			</tr>
 			{% endfor %}
-			
+
 		<p><input type="submit" name="vymaz" id="vymaz" value="VYMAZAŤ POUŽÍVATEĽA"></p>
 	</form>
 </section>
@@ -70,3 +74,5 @@
 {% endif %}
 
 {% endblock %}
+</body>
+</html>
