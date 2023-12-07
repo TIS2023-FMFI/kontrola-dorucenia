@@ -15,9 +15,13 @@
 <hr>
 <section id="user_info">
 	<h1>Informácie o používateľovi</h1>
-	<p>Meno: {{ name }}</p>
-	<p>Emailová adresa: {{ email }}</p>
-	<p>Práva administrátora: {{ admin }}</p>
+	<p>Meno: {{ user.first_name }}</p>
+	<p>Emailová adresa: {{ user.email }}</p>
+	<p>Práva administrátora: {% if user.admin == True %}
+        Ano
+    {% else %}
+        Nie</p>
+	{% endif %}
 </section>
 
 <section id = "password_change">
