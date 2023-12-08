@@ -5,11 +5,13 @@ from sqlalchemy.sql import func
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    admin = db.Column(db.Boolean)
+    name = db.Column(db.String(150))
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-    first_name = db.Column(db.String(150))
-    notes = db.relationship('Request')
-    def changePassword(self,new_password):
+    requests = db.relationship('Request')
+    
+    def changePassword(self, new_password):
         self.password = new_password
 
 

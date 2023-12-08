@@ -1,26 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-<nav>
-	<a href="{{ url_for('views.home') }}">Poslať požiadavku</a>
-	<a href="{{ url_for('views.user') }}">Používateľ</a>
-	<a href="/logout">Odhlásiť sa</a>
-</nav>
-<hr>
+{% extends 'base.html' %}
+
+{% block title %} Hlavná stránka {% endblock %}
+
+{% block content %}
+
 <section>
 	<form method="post" action="{{ url_for('views.order') }}">
 		<fieldset>
-			<legend>Vyhľadaj objednávku</legend>
-			<p><label for="number">Číslo objednávky:</label> <br>
+			<legend>Poslanie požiadavky</legend>
+			<p><label for="number">Číslo objednávky:</label> <br> 
 			<input type="text" name="number" id="number" size="20" required></p>
 		</fieldset>
 		<p><input type="submit" name="potvrd" id="potvrd" value="POTVRDIŤ ČÍSLO"></p>
 	</form>
 </section>
-</body>
-</html>
+{% endblock %}

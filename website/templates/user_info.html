@@ -1,21 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %} Stránka používateľa {% endblock %}
+
 {% block content %}
-<nav>
-	<a href="{{ url_for('views.home') }}">Poslať požiadavku</a>
-	<a href="{{ url_for('views.user') }}">Používateľ</a>
-	<a href="/logout">Odhlásiť sa</a>
-</nav>
-<hr>
+
 <section id="user_info">
 	<h1>Informácie o používateľovi</h1>
-	<p>Meno: {{ user.first_name }}</p>
+	<p>Meno: {{ user.name }}</p>
 	<p>Emailová adresa: {{ user.email }}</p>
 	<p>Práva administrátora: {% if user.admin == True %}
         Ano
@@ -37,7 +28,7 @@
 	</form>
 </section>
 
-{% if admin==True %}
+{% if user.admin == True %}
 <section>
 	<form method="post" action="/add_user_action">
 		<fieldset>
@@ -78,5 +69,3 @@
 {% endif %}
 
 {% endblock %}
-</body>
-</html>
