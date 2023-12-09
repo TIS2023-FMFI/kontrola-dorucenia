@@ -13,7 +13,19 @@ class User(db.Model, UserMixin):
     
     def changePassword(self, new_password):
         self.password = new_password
-
+        session = db.session
+        session.commit()
+        
+    def removeUser(self):
+        session = db.session
+        user_to_remove = User.query.get(self.id)
+        if user_to_remove:
+            session.delete(user_to_remove)
+            session.commit()
+            return True
+        return False
+        
+    
 
 class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True)
