@@ -38,6 +38,15 @@ class Request(db.Model):
     response = db.Column(db.Boolean)
     responses = db.relationship('Response')
 
+    def removeRequest(self):
+        session = db.session
+        request_to_remove = Request.query.get(self.id)
+        if request_to_remove:
+            session.delete(request_to_remove)
+            session.commit()
+            return True
+        return False
+
 
 class Response(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -49,7 +58,3 @@ class Response(db.Model):
     estimated_time = db.Column(db.Time)
     comment = db.Column(db.Text)
 
-
-class Order:
-    def __init__(self, loading_ctr):
-        self.loading_ctr = loading_ctr

@@ -3,13 +3,79 @@
 {% block title %} Hlavná stránka {% endblock %}
 
 {% block content %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <section>
-    <h1>User ID: {{ user.id }}</h1>
-    <p>{{ rows }}</p>
-
-    <form action="{{ url_for('views.request_function') }}" method="post">
-        <button type="submit">Send Request</button>
-    </form>
+	<form method="post" id="createRequestForm">
+		<fieldset>
+			<legend>Poslanie požiadavky</legend>
+			<p><label for="order_code">Číslo objednávky:</label> <br> 
+			<input type="text" name="order_code" id="order_code" size="20" required readonly value={{ order_code }}></p>
+			<p><label for="carrier_email">Vyberte mailovú adresu dispečera:</label> <br>			
+			<select name="carrier_email" id="carrier_email" required></p>
+			<option value=''>Vyberte emailovú adresu</option>
+			{% for email in email_addresses %}
+				<option value={{ email }}>{{ email }}</option>
+			{% endfor %}
+			</select>
+			<p><label for="send_date">Vyberte dátum odoslania:</label> <br>
+			<input type="date" name="send_date" id="send_date" size="20" required></p>
+			<p><label for="send_time">Vyberte čas odoslania:</label> <br>
+			<input type="time" value= name="send_time" id="send_time" size="20" required></p>
+			<p><label for="additional_message">Dodatočná správa:</label> <br>
+            <textarea name="additional_message" id="additional_message" rows="4" cols="20"></textarea></p>
+		</fieldset>
+		<p><input type="submit" name="posli" id="posli" value="POSLAŤ POŽIADAVKU"></p>
+	</form>
 </section>
+
+<script>
+$(document).ready(function () {
+    $('#createRequestForm').submit(function (event) {
+        event.preventDefault();
+
+        var formData = {
+            order_code: $('#order_code').val(),
+            carrier_email: $('#carrier_email').val(),
+            send_date: $('#send_date').val(),
+			send_time: $('#send_time').val(),
+            additional_message: $('#additional_message').val(),
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/create_request_action',
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify(formData),
+            success: function (data) {
+                if (data.success) {
+                    alert('Request created successfully!');
+                    var requestData = data.request;
+                    var newRow = $('<tr>');
+                    newRow.append('<td><input type="checkbox" name="requests_to_delete" value="' + requestData.id + '"></td>');
+                    newRow.append('<td>' + requestData.id + '</td>');
+                    newRow.append('<td>' + requestData.order_code + '</td>');
+                    newRow.append('<td>' + requestData.carrier_email + '</td>');
+                    newRow.append('<td>' + requestData.send_date + '</td>');
+					newRow.append('<td>' + requestData.send_time.toString('HH:mm') + '</td>');
+                    $('table').append(newRow);
+					window.location = '/'; 
+                } else {
+                    alert('Error creating request.');
+                }
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred.');
+            }
+			
+        });
+		$('#order_code').val('');
+        $('#carrier_email').val('');
+        $('#send_date').val('');
+		$('#send_time').val('');
+        $('#additional_message').val('');
+    });
+});
+</script>
+
 {% endblock %}

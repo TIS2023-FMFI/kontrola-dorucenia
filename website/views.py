@@ -1,12 +1,13 @@
-from flask import Blueprint, render_template, request, flash, jsonify, current_app
+from flask import Blueprint, render_template, request, flash, jsonify, current_app, redirect, url_for
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
 from . import db
 import json
 from flask_bcrypt import Bcrypt
 import pandas as pd
-from .models import User
+from .models import *
 from .utils import *
+from .excel import *
 import secrets
 
 views = Blueprint('views', __name__)
@@ -15,8 +16,22 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    return render_template("order_search.html", user=current_user)
+    if request.method== 'POST':
+        order_code = request.form.get('order_code')
+        order = Order(order_code)
+        if order.exist():
+            carrier = Carrier(order.carrier)
+            if carrier.exist():
+                email_addresses = []
+                for dispatcher in carrier.dispatchers:
+                    email_addresses.append(dispatcher.email)
+                return render_template("order.html", user=current_user, order_code=order_code, email_addresses=email_addresses)
+            flash('Incorrect carrier code', category='error')
+        else:
+             flash('Incorrect order code', category='error')
 
+    requests_without_response = Request.query.filter(Request.response == False)
+    return render_template("order_search.html", user=current_user, requests=requests_without_response)
 
 @views.route('/get_users', methods=['GET'])
 def get_users():
@@ -82,7 +97,6 @@ def delete_users():
     return jsonify({'success': False})
 
     
-
 @views.route('/user/', methods=['GET', 'POST'])
 @login_required
 def user():
@@ -92,29 +106,8 @@ def user():
         users_from_db.remove(current_user)
     return render_template("user_info.html", user=current_user, users = users_from_db)
 
-
 @views.route('/order/', methods=['GET', 'POST'])
 @login_required
 def order():
-    # tu treba nacitat objednavky, zistit ci objednavka existuje, vypisat o nej informacie, do htmlka spravit button na poslanie requestu
-    # workbook = pd.read_excel('../example.xls')
-    # rows = "Column First Name in excel document example.xls contains values : <br>"
-    # for index, row in workbook.iterrows():
-    #     rows += row['First Name'] + ' <br> '
-    return render_template("order.html", user=current_user)
+    return render_template("order.html",  user=current_user, order_code=order_code, email_addresses=email_addresses)
 
-
-@views.route('/send-request/', methods=['GET', 'POST'])
-@login_required
-def request_function(): # toto sa nemoze volat request, pretoze nastane konflikt s request.method ! 
-    subject = 'Hello from your Flask app!'
-    body = 'This is a test email sent from a Flask app.'
-
-    msg = Message(subject, sender='t402829@gmail.com', recipients=["mattuss12@gmail.com"])
-    msg.body = body
-
-    try:
-        Mail(current_app).send(msg)
-        return 'Email sent successfully!'
-    except Exception as e:
-        return 'Error sending email: ' + str(e)
