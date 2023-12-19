@@ -11,17 +11,21 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    i = 0
     return render_template("order_search.html", user=current_user)
 
 
-@views.route('/user', methods=['GET', 'POST'])
+@views.route('/reset_password/', methods=['GET', 'POST'])
+def reset_password():
+    return render_template("reset_password.html", user=current_user)
+
+
+@views.route('/user/', methods=['GET', 'POST'])
 @login_required
 def user():
     return render_template("user_info.html", user=current_user)
 
 
-@views.route('/order', methods=['GET', 'POST'])
+@views.route('/order/', methods=['GET', 'POST'])
 @login_required
 def order():
     # tu treba nacitat objednavky, zistit ci objednavka existuje, vypisat o nej informacie, do htmlka spravit button na poslanie requestu
@@ -32,7 +36,7 @@ def order():
     return render_template("order.html", user=current_user)
 
 
-@views.route('/send-request', methods=['GET', 'POST'])
+@views.route('/send-request/', methods=['GET', 'POST'])
 @login_required
 def request():
     subject = 'Hello from your Flask app!'

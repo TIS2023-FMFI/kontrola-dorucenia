@@ -7,14 +7,13 @@ from flask_login import login_user, login_required, logout_user, current_user
 auth = Blueprint('auth', __name__)
 
 
-@auth.route('/login', methods=['GET', 'POST'])
+@auth.route('/login/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('mail')
+        email = request.form.get('email')
         password = request.form.get('password')
 
         user = User.query.filter_by(email=email).first()
-        User.query.get(user.id)
         if user:
             if user.password == password:  # check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
@@ -28,7 +27,7 @@ def login():
     return render_template("login.html", user=current_user)
 
 
-@auth.route('/logout')
+@auth.route('/logout/')
 @login_required
 def logout():
     logout_user()
