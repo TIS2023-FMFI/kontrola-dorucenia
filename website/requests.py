@@ -60,7 +60,7 @@ def request_function(): # toto sa nemoze volat request, pretoze nastane konflikt
     subject = 'Hello from your Flask app!'
     body = 'This is a test email sent from a Flask app.'
 
-    msg = Message(subject, sender='t402829@gmail.com', recipients=["mattuss12@gmail.com"])
+    msg = Message(subject, sender='t402829@gmail.com', recipients=["veronika.hornakova25@gmail.com"])
     msg.body = body
 
     try:

@@ -5,7 +5,7 @@
 {% block content %}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <section id="user_info">
-	<h1>Informácie o používateľovi</h1>
+	<h2>Informácie o používateľovi</h2>
 	<p>Meno: {{ user.name }}</p>
 	<p>Emailová adresa: {{ user.email }}</p>
 	<p>Práva administrátora: {% if user.admin == True %}
@@ -52,7 +52,7 @@
         <fieldset>
             <legend>Vymazanie používateľa</legend>
         </fieldset>
-        <table border="1" width="600">
+        <table border="1">
             <tr>
                 <th>Delete</th><th>ID</th><th>Admin</th><th>Meno</th><th>Email</th>
             </tr>

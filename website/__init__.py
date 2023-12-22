@@ -22,10 +22,12 @@ def create_app():
     from .views import views
     from .authorization import auth
     from .requests import requests
+    from .communication import communication
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(requests, url_prefix='/')
+    app.register_blueprint(communication, url_prefix='/')
 
     from .models import User
 

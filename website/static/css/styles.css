@@ -1,8 +1,6 @@
 header {
 	border-bottom: 1px solid #d9dad7;
-	vertical-align: text-bottom;
 }
-
 section{
 	color: #3b4754;
 	border-radius: 20px;
@@ -10,20 +8,62 @@ section{
 	margin: 5em 20em 0em 20em;
 	padding: 2em 5em 5em 3em;
 	text-align: center;
+	float:none;
+	clear:both;
+}
+#user_info{
+	margin: 1% 2% 6% 21%;
+	padding: 2% 1%;
+	width: 25%;
+	float:left;	
+	clear:none;
+	height: 290px;
+}
+#password_change{
+	margin: 1% 21% 6% 2%;
+	padding: 2% 1%;
+	width: 25%;
+	float:left;
+	clear:none;	
+	height: 290px;
+}
+#main_section{
+	background-color:#f8f8f8;
+	padding:1em;
+}
+#main_section section{
+	color: #3b4754;
+	border-radius: 20px;
+	background-color: #edf0f4;
+	margin: 2em 5em;
+	padding: 2em 5em 5em 3em;
+	text-align: center;
+	float:none;
+	clear:both;
+	border: 1px solid #29323d;
+}
+hr{
+	border: 1px dotted #29323d;
+	margin: 0 0 30px 0;
 }
 fieldset{
 	border: 0em;
 }
-legend{
+legend,h2{
+	margin: 0px;
 	font-weight: bold;
 	font-size: 1.5em;
 	color: #29323d;
+}
+h1{
+	color: #29323d;
+	margin-top: 0;
 }
 p{
 	padding-bottom: 0.3em;
 }
 
-input[type="text"],input[type="password"], input[type="date"], input[type="time"]{
+input[type="text"],input[type="password"], input[type="date"], input[type="time"], select{
 	border: 0.1em 0.1em 0.1em 0.1em;
 	border-color: #d9dad7;
 	border-radius: 8px;
@@ -43,4 +83,36 @@ input[type="submit"]{
 	color: white;
 	border-radius: 20px;
 	padding: 1em 1em 1em 1em;
+	margin: 1em 2em;
+}
+nav{
+	text-align: center;
+	height: 20px;
+	padding-top: 0.7em;
+}
+a{
+	margin: 0em 1em 0em 1em;
+	font-weight:bold;
+	color: #29323d;
+	font-size: 20px;
+}
+table {
+	width: 90%;
+	border-collapse: collapse;
+	border: 3px solid #d6d6d6;
+	margin:auto;
+}
+table tr:nth-child(even) {
+	background-color: #ffffff;
+	padding: 8px;
+}
+th,td{
+	padding: 5px;
+}
+table tr:nth-child(odd) {
+	background-color: #ebebeb;
+	padding: 8px;
+}
+table tr:first-child {
+	background-color: #d6d6d6;
 }
