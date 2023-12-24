@@ -9,6 +9,8 @@ from .models import *
 from .utils import *
 from .excel import *
 import secrets
+from .communication import getConversations
+from collections import OrderedDict
 
 views = Blueprint('views', __name__)
 
@@ -31,7 +33,8 @@ def home():
              flash('Incorrect order code', category='error')
 
     requests_without_response = Request.query.filter(Request.response == False)
-    return render_template("order_search.html", user=current_user, requests=requests_without_response)
+    conversations = list(getConversations())
+    return render_template("order_search.html", user=current_user, requests=requests_without_response, conv = conversations, curr_url= request.url)
 
 @views.route('/get_users', methods=['GET'])
 def get_users():
@@ -106,8 +109,8 @@ def user():
         users_from_db.remove(current_user)
     return render_template("user_info.html", user=current_user, users = users_from_db)
 
-@views.route('/order/', methods=['GET', 'POST'])
-@login_required
-def order():
-    return render_template("order.html",  user=current_user, order_code=order_code, email_addresses=email_addresses)
+# @views.route('/order/', methods=['GET', 'POST'])
+# @login_required
+# def order():
+#     return render_template("order.html",  user=current_user, order_code=order_code, email_addresses=email_addresses)
 
