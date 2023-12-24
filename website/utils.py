@@ -19,7 +19,19 @@ def find_request(id: int = None):
             return req
     return False
 
-def send_email(subject: str, body: str):
-    msg = Message(subject, sender='t402829@gmail.com', recipients=["t402829@gmail.com"])
-    msg.body = body
-    return Mail(current_app).send(msg)
+def send_email(subject: str, body: str, email: str):
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = b'hs8b9e256co648'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_SSL'] = False
+    app.config['MAIL_USERNAME'] = 't402829@gmail.com'
+    app.config['MAIL_PASSWORD'] = 'Pbui rzbg sabm swot '  # heslo od emailu
+    with app.app_context():
+        msg = Message(subject, sender='t402829@gmail.com', recipients=[email])
+        msg.body = body
+        return Mail(app).send(msg)
+    
+    
