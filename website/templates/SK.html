@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="sk">
-	<head>
-		<meta charset="utf-8"/>
-		<title> </title>
-		<link rel="stylesheet" href="../static/css/styles.css">
-	</head>
-	<body>
-		<header>
-			<h1>CEVA Logistics</h1>
-		</header>
+{% extends 'base.html' %}
+
+{% block title %} CEVA logistics {% endblock %}
+
+{% block content %}
 <section>
 	<h2>Detaily objednávky</h2>
 	<p>Číslo objednávky: </p>
@@ -121,5 +115,4 @@ function handleSelectChange() {
 
 </script>
 
-</body>
-</html>
+{% endblock %}
