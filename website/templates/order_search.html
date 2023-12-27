@@ -3,15 +3,85 @@
 {% block title %} Hlavná stránka {% endblock %}
 
 {% block content %}
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <section>
-	<form method="post" action="{{ url_for('views.order') }}">
+	<form method="post">
 		<fieldset>
 			<legend>Poslanie požiadavky</legend>
-			<p><label for="number">Číslo objednávky:</label> <br> 
-			<input type="text" name="number" id="number" size="20" required></p>
+			<p><label for="order_code">Číslo objednávky:</label> <br> 
+			<input type="text" name="order_code" id="order_code" size="20" required></p>
 		</fieldset>
 		<p><input type="submit" name="potvrd" id="potvrd" value="POTVRDIŤ ČÍSLO"></p>
 	</form>
 </section>
+
+<section>
+    <form method="post" id="deleteRequestsForm">
+        <fieldset>
+            <legend>Požiadavky bez odpovede</legend>
+        </fieldset>
+        <table border="1" width="600">
+            <tr>
+                <th>Delete</th><th>ID</th><th>Číslo objednávky</th><th>Email dispečera</th><th>Dátum poslania</th><th>Čas poslania</th><th>Odkaz</ht>
+            </tr>
+
+            {% for req in requests %}
+                <tr>
+                    <td><input type="checkbox" name="requests_to_delete" value="{{ req.id }}"></td>
+                    <td>{{ req.id }}</td>
+                    <td>{{ req.order_code }}</td>
+                    <td>{{ req.carrier_email }}</td>
+                    <td>{{ req.send_date }}</td>
+                    <td>{{ req.send_time }}</td>
+                    <td><a href="{{ curr_url ~ '/' ~ conv[loop.index0] }}">Link</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <p><input type="submit" name="vymaz" id="vymaz" value="VYMAZAŤ POŽIADAVKU"></p>
+    </form>
+</section>
+
+
+<script>
+    $(document).ready(function () {
+        $('#deleteRequestsForm').submit(function (event) {
+            event.preventDefault();
+
+            var request_ids_to_delete = [];
+			
+            $('input[name="requests_to_delete"]:checked').each(function () {
+                request_ids_to_delete.push($(this).val());
+            });
+
+            if (request_ids_to_delete.length === 0) {
+                alert('Please select reqeusts to delete.');
+                return;
+            }
+            $.ajax({
+				type: 'POST',
+				url: '/delete_requests',
+				contentType: 'application/json;charset=UTF-8',
+				data: JSON.stringify({ 'requests_to_delete': request_ids_to_delete }),
+				success: function (data) {
+                    if (data.success) {
+						 alert('Requests deleted successfully!');
+						 $.each(request_ids_to_delete, function (index, value) {
+                            $('input[name="requests_to_delete"][value="' + value + '"]').closest('tr').remove();
+                        });
+                        
+                    } else {
+                        alert('Error deleting requests.');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred.');
+                }
+            });
+        });
+    });
+</script>
+
+
 {% endblock %}
+
