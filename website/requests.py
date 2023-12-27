@@ -12,8 +12,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from .communication import conversations, generate_random_url, deleteConversation, chat
 
 requests = Blueprint('requests', __name__)
-scheduler = BackgroundScheduler()
 scheduler = BackgroundScheduler(timezone="Europe/Bratislava")
+
+
 @requests.route('/create_request_action', methods=['POST'])
 @login_required
 def create_request():
@@ -37,9 +38,9 @@ def create_request():
         request_data = {'id': new_request.id, 'order_code': new_request.order_code, 'carrier_email': new_request.carrier_email, 'send_date': new_request.send_date, 'send_time': json.dumps(new_request.send_time, default=str)}
         scheduled_date = datetime.datetime(int(datelist[0]), int(datelist[1]), int(datelist[2]), int(timelist[0]), int(timelist[1]), 0)
         scheduler.add_job(send_email, 'date', args=['Communication',  f'{website_link}\n{additional_message}', carrier_email], run_date=scheduled_date)
-        scheduler.start()
+        if not scheduler.running:
+            scheduler.start()
         return jsonify({'success': True, 'request': request_data})
-    #testovanie_tis
     return jsonify({'success': False})
 
 
