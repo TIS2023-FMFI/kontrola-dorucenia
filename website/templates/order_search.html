@@ -33,7 +33,7 @@
                     <td>{{ req.carrier_email }}</td>
                     <td>{{ req.send_date }}</td>
                     <td>{{ req.send_time }}</td>
-                    <td><a href="{{ curr_url ~ '/' ~ conv[loop.index0] }}">Link</a></td>
+                    <td><a href="{{ curr_url ~ '/' ~ req.response_id }}">Link</a></td>
                 </tr>
             {% endfor %}
         </table>

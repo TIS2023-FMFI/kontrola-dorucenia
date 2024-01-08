@@ -4,18 +4,24 @@
 
 {% block content %}
 <section>
-	<h2>Detaily objednávky</h2>
-	<p>Číslo objednávky: </p>
+	<h2>Detaily objednávky </h2>
+	<p>Číslo objednávky: {{req.order_code}}</p>
 	<p>Externá referencia klienta: </p>
 	<p>Dodávateľ: </p>
 	<p>Kontakt: </p>
 	<p>ŠPZ vozidla: </p>
 	<p>Objednávateľ: </p>
-	<p>Nakládka: </p>
-	<p>Vykládka: </p>
+	<p>Nakládka: {% if res.loaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
+	<p>Vykládka: {% if res.unloaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
 </section>
 
 <section id="main_section">
+	<section>
+		<legend> Stav objednávky : <br><br>
+			{% for ch in chat %}
+			{{ ch.string }} <br><br>
+			{% endfor %} </legend>
+	</section>
 	<h2>Potvrdenie stavu</h2>
 	
 	<section>
@@ -23,18 +29,18 @@
 			<fieldset>
 				<legend>Vozidlo príde/prišlo načas</legend>
 				<p>Potvrdzujem dátum a čas príchodu na nakládku<br>
-				<input type="checkbox" name="loaded" id="loaded" value="loaded"><label for="loaded">Naložené</label>
+				<input type="checkbox" name="loaded" id="loaded" value="loaded" {% if res.loaded %}checked{% endif %}><label for="loaded">Naložené</label>
 				<input type="submit" name="confirm_loading" id="confirm_loading" value="POTVRDIŤ NAKLÁDKU"></p>
 				<hr>
 				<p>Potvrdzujem dátum a čas príchodu na vykládku<br>
-				<input type="checkbox" name="unloaded" id="unloaded" value="unloaded"><label for="unloaded">Vyložené</label>
+				<input type="checkbox" name="unloaded" id="unloaded" value="unloaded" {% if res.unloaded %}checked{% endif %}><label for="unloaded">Vyložené</label>
 				<input type="submit" name="confirm_unloading" id="confirm_unloading" value="POTVRDIŤ VYKLÁDKU"></p>
 				
 			</fieldset>
 			
 		</form>
 	</section>
-	
+
 	<section>
 		<form method="post">
 			<fieldset>
