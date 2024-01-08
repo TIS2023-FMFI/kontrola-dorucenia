@@ -33,17 +33,36 @@ def create_request():
         main_page_url = url_for('views.home', _external=True)
         website_link = f'{main_page_url}/{new_chat_id}'
 
-        new_request = Request(user_id=user_id, order_code=order_code, carrier_email=carrier_email, send_date=send_date, send_time=send_time, additional_message=additional_message, response=response, response_id  = new_chat_id)
-        db.session.add(new_request)
-        db.session.commit()
+        if Request.query.filter(Request.order_code == order_code).first():
+            new_request = Request.query.filter(Request.order_code == order_code).first()
+            new_request.send_date = send_date
+            new_request.send_time = send_time
+            new_request.additional_message = additional_message
 
-        new_response = Response(request_id = new_request.id, loaded = False, unloaded = False, response_id = new_chat_id)
-        db.session.add(new_response)
-        db.session.commit()
+            old_reponse_id = new_request.response_id
+            new_request.response_id = new_chat_id
 
-        new_chat = Chat(string="Čaká sa na potvrdenie času nákladky.", response_id=new_response.response_id)
-        db.session.add(new_chat)
-        db.session.commit()
+            new_response = Response.query.filter(Response.request_id == new_request.id).first()
+            new_response.response_id = new_chat_id
+
+            new_chat = Chat.query.filter(Chat.response_id == old_reponse_id).all()
+            for ch in new_chat:
+                ch.response_id = new_chat_id
+
+            db.session.commit()
+
+        else:
+            new_request = Request(user_id=user_id, order_code=order_code, carrier_email=carrier_email, send_date=send_date, send_time=send_time, additional_message=additional_message, response=response, response_id  = new_chat_id)
+            db.session.add(new_request)
+            db.session.commit()
+
+            new_response = Response(request_id = new_request.id, loaded = False, unloaded = False, response_id = new_chat_id)
+            db.session.add(new_response)
+            db.session.commit()
+
+            new_chat = Chat(string="Čaká sa na potvrdenie času nákladky.", response_id=new_response.response_id)
+            db.session.add(new_chat)
+            db.session.commit()
 
         request_data = {'id': new_request.id, 'order_code': new_request.order_code, 'carrier_email': new_request.carrier_email, 'send_date': new_request.send_date, 'send_time': json.dumps(new_request.send_time, default=str)}
         scheduled_date = datetime.datetime(int(datelist[0]), int(datelist[1]), int(datelist[2]), int(timelist[0]), int(timelist[1]), 0)

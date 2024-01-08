@@ -132,7 +132,8 @@ class Response(db.Model):
 class Chat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     string = db.Column(db.String)
-    response_id = db.Column(db.String)
+    response_id = db.Column(db.Integer, db.ForeignKey('response.id'))
+    response = db.relationship('Response')
 
     def removeChat(self):
         session = db.session
