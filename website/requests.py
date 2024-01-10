@@ -33,25 +33,35 @@ def create_request():
         main_page_url = url_for('views.home', _external=True)
         website_link = f'{main_page_url}/{new_chat_id}'
 
+
+        #ked uz sa na order (napr. T00000000) vytvoril nejaky request, tak sa nevytvara zase novy, ale updatuje sa ten stary aby
+        #bolo mozne sledovat celu komunikaciu medzi dispecerom ceva a dispecerom dopravcu
         if Request.query.filter(Request.order_code == order_code).first():
+
             new_request = Request.query.filter(Request.order_code == order_code).first()
             new_request.send_date = send_date
             new_request.send_time = send_time
             new_request.additional_message = additional_message
 
-            old_reponse_id = new_request.response_id
+            # response_id je URL vygenerovanej requesty, cize to sa vzdy pri generovani novej requesty musi menit
+            # cize tento kod iba meni staru url za novu url
+            old_response_id = new_request.response_id
             new_request.response_id = new_chat_id
 
             new_response = Response.query.filter(Response.request_id == new_request.id).first()
             new_response.response_id = new_chat_id
 
-            new_chat = Chat.query.filter(Chat.response_id == old_reponse_id).all()
+            new_chat = Chat.query.filter(Chat.response_id == old_response_id).all()
             for ch in new_chat:
                 ch.response_id = new_chat_id
 
             db.session.commit()
-
+        # ked este request (napr. T0000..) neexistuje, tak sa vytvori request, vytvori sa response ktora patri
+        # requestu a trackuje vsetky udaje o objednavke,
+        # cize ci je kedy bude nalozena, ci je nalozena, kedy bude vylozena a ci je vylozena, taktiez sa vytvori chat
+        # ktory trackuje celu komunikaciu ktora sa zobrazuje na stranke SK.html
         else:
+
             new_request = Request(user_id=user_id, order_code=order_code, carrier_email=carrier_email, send_date=send_date, send_time=send_time, additional_message=additional_message, response=response, response_id  = new_chat_id)
             db.session.add(new_request)
             db.session.commit()

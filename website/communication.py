@@ -37,28 +37,26 @@ def deleteConversation(index: int) -> bool:
 def chat(chat_id):
     current_response = Response.query.filter(Response.response_id == chat_id).all()
     current_request = Request.query.filter(Request.response_id == chat_id).all()
-    loaded = False
+
     if not current_response:
         return render_template('chat.html', chat_id='err', messages="Site not found!")
+
     current_response = current_response[0]
     current_request = current_request[0]
 
     if request.method == 'POST':
 
+        #vsetky if-ka trackuju to, co sa zakliklo vo formulari SK.html- mohlo sa zakliknut len to ze sa uskutocnila nakladka,
+        # a zaroven aj vsetko naraz preto to je takto vyclenene
+
         loaded_checkbox_value = request.form.get('loaded')
         if loaded_checkbox_value == 'loaded' and not current_response.loaded:
-            #order = Order(current_request.order_code)
-
-            new_chat = Chat(string="Nákladka sa vykoná v dohodnutom čase.", response_id=current_response.response_id)
-            db.session.add(new_chat)
-            db.session.commit()
+            add_new_chat("Nákladka sa vykoná v dohodnutom čase.", current_response)
             current_response.load()
 
         unloaded_checkbox_value = request.form.get('unloaded')
-        if unloaded_checkbox_value == 'unloaded' and not current_response.unloaded:
-            new_chat = Chat(string="Výkladka sa vykoná v dohodnutom čase.", response_id=current_response.response_id)
-            db.session.add(new_chat)
-            db.session.commit()
+        if unloaded_checkbox_value == 'unloaded' and not current_response.unloaded and current_response.loaded:
+            add_new_chat("Výkladka sa vykoná v dohodnutom čase.", current_response)
             current_response.unload()
 
         cause_delay = request.form.get('cause_delay')
@@ -79,18 +77,10 @@ def chat(chat_id):
                 current_response.set_loading_time(time)
                 current_response.set_delay_loading(True)
 
-                cause = get_root_cause(cause_delay)
-                if cause == 'Iný dôvod':
-                    cause = comment
+                cause = get_cause(cause_delay, comment)
 
-                new_chat = Chat(string="Vozidlo bude meškať na nákladku z dôvodu " + cause + ".",
-                                response_id=current_response.response_id)
-                db.session.add(new_chat)
-                db.session.commit()
-                new_chat = Chat(string="Predpokladaný čas nákladky: " + date + " " + time,
-                                response_id=current_response.response_id)
-                db.session.add(new_chat)
-                db.session.commit()
+                add_new_chat("Vozidlo bude meškať na nákladku z dôvodu " + cause + ".", current_response)
+                add_new_chat("Predpokladaný čas nákladky: " + date + " " + time, current_response)
 
         late_unloading_value = request.form.get('late_unloading')
         if late_unloading_value:
@@ -99,18 +89,21 @@ def chat(chat_id):
                 current_response.set_unloading_time(time)
                 current_response.delay_unloading = True
 
-                cause = get_root_cause(cause_delay)
-                if cause == 'Iný dôvod':
-                    cause = comment
+                cause = get_cause(cause_delay, comment)
 
-                new_chat = Chat(string="Vozidlo bude meškať na výkladku z dôvodu " + cause + ".", response_id=current_response.response_id)
-                db.session.add(new_chat)
-                db.session.commit()
-                new_chat = Chat(string="Predpokladaný čas výkladky: " + date + " " + time, response_id=current_response.response_id)
-                db.session.add(new_chat)
-                db.session.commit()
+                add_new_chat("Vozidlo bude meškať na výkladku z dôvodu " + cause + ".", current_response)
+
+                add_new_chat("Predpokladaný čas výkladky: " + date + " " + time, current_response)
+
     all_chat = Chat.query.filter(Chat.response_id == current_response.response_id).all()
     return render_template('SK.html', chat_id=chat_id, res=current_response, req=current_request, chat=all_chat)
+
+
+def get_cause(cause_delay, comment):
+    cause = get_root_cause(cause_delay)
+    if cause == 'Iný dôvod':
+        cause = comment
+    return cause
 
 
 def get_root_cause(case):
@@ -126,3 +119,9 @@ def get_root_cause(case):
     }
 
     return switch.get(case, None)
+
+
+def add_new_chat(text, current_response):
+    new_chat = Chat(string=text, response_id=current_response.response_id)
+    db.session.add(new_chat)
+    db.session.commit()
