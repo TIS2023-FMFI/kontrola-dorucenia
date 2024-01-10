@@ -84,7 +84,7 @@ def chat(chat_id):
 
         late_unloading_value = request.form.get('late_unloading')
         if late_unloading_value:
-            if not current_response.unloaded:
+            if not current_response.unloaded and current_response.loaded:
                 current_response.set_unloading_date(date)
                 current_response.set_unloading_time(time)
                 current_response.delay_unloading = True
