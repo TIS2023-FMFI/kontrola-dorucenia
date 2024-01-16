@@ -1,6 +1,7 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+from datetime import datetime
 
 
 class User(db.Model, UserMixin):
@@ -10,12 +11,12 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     requests = db.relationship('Request')
-    
+
     def changePassword(self, new_password):
         self.password = new_password
         session = db.session
         session.commit()
-        
+
     def removeUser(self):
         session = db.session
         user_to_remove = User.query.get(self.id)
@@ -24,8 +25,7 @@ class User(db.Model, UserMixin):
             session.commit()
             return True
         return False
-        
-    
+
 
 class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,25 +36,112 @@ class Request(db.Model):
     send_time = db.Column(db.Time)
     additional_message = db.Column(db.Text)
     response = db.Column(db.Boolean)
-    responses = db.relationship('Response')
+    responses = db.relationship('Response', foreign_keys='Response.request_id')
+    response_id = db.Column(db.String)
 
     def removeRequest(self):
         session = db.session
-        request_to_remove = Request.query.get(self.id)
-        if request_to_remove:
-            session.delete(request_to_remove)
+        try:
+            session.delete(self)
             session.commit()
             return True
-        return False
+        except Exception as e:
+            session.rollback()
+            print(f"Error during deletion: {e}")
+            return False
 
 
 class Response(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     request_id = db.Column(db.Integer, db.ForeignKey('request.id'))
+    response_id = db.Column(db.Integer, db.ForeignKey('request.response_id'))
     type = db.Column(db.String)
-    delay = db.Column(db.Boolean)
+    delay_loading = db.Column(db.Boolean)
+    delay_unloading = db.Column(db.Boolean)
     root_cause = db.Column(db.String)
-    estimated_date = db.Column(db.Date)
-    estimated_time = db.Column(db.Time)
+    loading_estimated_date = db.Column(db.Date)
+    loading_estimated_time = db.Column(db.Time)
+    unloading_estimated_date = db.Column(db.Date)
+    unloading_estimated_time = db.Column(db.Time)
     comment = db.Column(db.Text)
+    loaded = db.Column(db.Boolean)
+    unloaded = db.Column(db.Boolean)
 
+    def load(self):
+        self.loaded = True
+        session = db.session
+        session.commit()
+
+    def unload(self):
+        self.unloaded = True
+        session = db.session
+        session.commit()
+
+    def set_root_cause(self, cause):
+        self.root_cause = cause
+        session = db.session
+        session.commit()
+
+    def set_delay_loading(self, delay):
+        self.delay_loading = delay
+        session = db.session
+        session.commit()
+
+    def set_delay_unloading(self, delay):
+        self.delay_unloading = delay
+        session = db.session
+        session.commit()
+
+    def set_loading_date(self, date):
+        self.loading_estimated_date = datetime.strptime(date, '%Y-%m-%d')
+        session = db.session
+        session.commit()
+
+    def set_loading_time(self, time):
+        self.loading_estimated_time = datetime.strptime(time, '%H:%M').time()
+        session = db.session
+        session.commit()
+
+    def set_unloading_date(self, date):
+        self.unloading_estimated_date = datetime.strptime(date, '%Y-%m-%d')
+        session = db.session
+        session.commit()
+
+    def set_unloading_time(self, time):
+        self.unloading_estimated_time = datetime.strptime(time, '%H:%M').time()
+        session = db.session
+        session.commit()
+
+    def set_comment(self, comment):
+        self.comment = comment
+        session = db.session
+        session.commit()
+
+    def removeResponse(self):
+        session = db.session
+        try:
+            session.delete(self)
+            session.commit()
+            return True
+        except Exception as e:
+            session.rollback()
+            print(f"Error during deletion: {e}")
+            return False
+
+
+class Chat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    string = db.Column(db.String)
+    response_id = db.Column(db.Integer, db.ForeignKey('response.id'))
+    response = db.relationship('Response')
+
+    def removeChat(self):
+        session = db.session
+        try:
+            session.delete(self)
+            session.commit()
+            return True
+        except Exception as e:
+            session.rollback()
+            print(f"Error during deletion: {e}")
+            return False

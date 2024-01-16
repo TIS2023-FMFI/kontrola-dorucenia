@@ -4,15 +4,15 @@
 
 {% block content %}
 <section>
-	<h2>Detaily objednávky </h2>
-	<p>Číslo objednávky: {{req.order_code}}</p>
-	<p>Externá referencia klienta: </p>
-	<p>Dodávateľ: </p>
-	<p>Kontakt: </p>
-	<p>ŠPZ vozidla: </p>
-	<p>Objednávateľ: </p>
-	<p>Nakládka: {% if res.loaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
-	<p>Vykládka: {% if res.unloaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
+	<h2>Order details </h2>
+	<p>Order number: {{req.order_code}}</p>
+	<p>Booking reference: </p>
+	<p>Supplier: </p>
+	<p>Contact: </p>
+	<p>Vehicle Reg No.: </p>
+	<p>Customer: </p>
+	<p>Loading: {% if res.loaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
+	<p>Unloading: {% if res.unloaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
 </section>
 
 <section id="main_section">
@@ -22,18 +22,18 @@
 			{{ ch.string }} <br><br>
 			{% endfor %} </legend>
 	</section>
-	<h2>Potvrdenie stavu</h2>
+	<h2>Status confirmation</h2>
 	
 	<section>
 		<form method="post">
 			<fieldset>
-				<legend>Vozidlo príde/prišlo načas</legend>
-				<p>Potvrdzujem dátum a čas príchodu na nakládku<br>
-				<input type="checkbox" name="loaded" id="loaded" value="loaded" {% if res.loaded %}checked{% endif %}><label for="loaded">Naložené</label>
+				<legend>The vehicle will arrive/arrived on time</legend>
+				<p>I confirm the date and time of arrival for loading<br>
+				<input type="checkbox" name="loaded" id="loaded" value="loaded" {% if res.loaded %}checked{% endif %}><label for="loaded">Loaded</label>
 				<input type="submit" name="confirm_loading" id="confirm_loading" value="POTVRDIŤ NAKLÁDKU"></p>
 				<hr>
-				<p>Potvrdzujem dátum a čas príchodu na vykládku<br>
-				<input type="checkbox" name="unloaded" id="unloaded" value="unloaded" {% if res.unloaded %}checked{% endif %}><label for="unloaded">Vyložené</label>
+				<p>I confirm the date and time of arrival for unloading<br>
+				<input type="checkbox" name="unloaded" id="unloaded" value="unloaded" {% if res.unloaded %}checked{% endif %}><label for="unloaded">Unloaded</label>
 				<input type="submit" name="confirm_unloading" id="confirm_unloading" value="POTVRDIŤ VYKLÁDKU"></p>
 				
 			</fieldset>
@@ -44,30 +44,30 @@
 	<section>
 		<form method="post">
 			<fieldset>
-				<legend>Vozidlo bude meškať</legend>
-				<p><label for="cause_delay">Príčina meškania:</label>
+				<legend>The vehicle will be late</legend>
+				<p><label for="cause_delay">The cause of the delay:</label>
 				<select name="cause_delay" id="cause_delay" required onchange="handleSelectChange()"></p>
-					<option value=''>Vyberte príčinu meškania</option>
-					<option value="weather">Nepriaznivé počasie</option>
-					<option value="broken_truck">Pokazený kamión</option>
-					<option value="accident">Dopravná nehoda</option>
-					<option value="delay_loading">Zdržanie na predchádzajúcej nákladke</option>
-					<option value="delay_unloading">Zdržanie na predchádzajúcej výkladke</option>
-					<option value="driver_performance">Výkon vodiča</option>
-					<option value="traffic_situation">Dopravná situácia</option>
-					<option value="other">Iný dôvod</option>
+					<option value=''>Select the cause for the delay</option>
+					<option value="weather">Bad weather</option>
+					<option value="broken_truck">Broken truck</option>
+					<option value="accident">Car accident</option>
+					<option value="delay_loading">Delay on the previous load</option>
+					<option value="delay_unloading">Delay at the previous display</option>
+					<option value="driver_performance">Driver performance</option>
+					<option value="traffic_situation">Traffic situation</option>
+					<option value="other">Another reason</option>
 				</select>
 				
-				<p><label for="date">Vyberte predpokladaný dátum a čas príchodu:</label>
+				<p><label for="date">Estimated date and time of arrival:</label>
 				<input type="date" name="date" id="date" size="20" required onchange="handleDateTimeChange()">
 				<input type="time" name="time" id="time" size="20" required onchange="handleDateTimeChange()"></p>
 				
-				<p><label for="message">Komentár:</label>
+				<p><label for="message">Comment:</label>
 				<textarea name="message" id="message" rows="4" cols="20" required></textarea></p>
 				
 			</fieldset>
-			<p><input type="submit" name="late_loading" id="late_loading" value="MEŠKÁ NA NAKLÁDKU">
-			<input type="submit" name="late_unloading" id="late_unloading" value="MEŠKÁ NA VYKLÁDKU"></p>
+			<p><input type="submit" name="late_loading" id="late_loading" value="LATE FOR LOADING">
+			<input type="submit" name="late_unloading" id="late_unloading" value="LATE FOR UNLOADING"></p>
 		</form>
 	</section>
 
