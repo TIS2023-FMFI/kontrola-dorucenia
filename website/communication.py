@@ -1,57 +1,49 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from flask_login import login_required, current_user
+from flask import Blueprint, render_template, request
 import secrets
 import string
-from collections import OrderedDict
 from . import db
-import pandas as pd
-
+import configparser
 from website.models import Request, Response, User
 from .excel import Evidencia_nezhod
+from flask_login.utils import _get_user
+
 
 communication = Blueprint('communication', __name__)
-conversations = OrderedDict()
+
 
 
 def generate_random_url() -> str:
     characters = string.ascii_letters + string.digits
     random_url = ''.join(secrets.choice(characters) for _ in range(20))
-    existing_urls = set(conversations.keys())
-    while random_url in existing_urls:  # Ak by sa nahodou vytvorila url, ktora uz existuje
-        random_url = ''.join(secrets.choice(characters) for _ in range(20))
-    conversations[random_url] = []
     return random_url
 
 
-def getConversations() -> OrderedDict:
-    return conversations
+def read_language_file(file_path, lang_code):
+    config = configparser.ConfigParser()
+    config.read(file_path,encoding='utf-8')
+    return config[lang_code]
 
 
-def deleteConversation(index: int) -> bool:
-    if len(conversations) < index + 1:
-        return False
-    toDelete = conversations.items()[index]
-    conversations.pop(toDelete, None)
-    return True
+
+def getLanguage(user, selected_lang):
+    return 'SK' if isinstance(user, User) else selected_lang
 
 
 @communication.route('/<chat_id>', methods=['GET', 'POST'])
 def chat(chat_id):
     current_response = Response.query.filter(Response.response_id == chat_id).all()
     current_request = Request.query.filter(Request.response_id == chat_id).all()
-
+    
     if not current_response:
-        return render_template('chat.html', chat_id='err', messages="Site not found!")
+        return render_template('communication.html', error = True)
 
     current_response = current_response[0]
     current_request = current_request[0]
     current_user = User.query.filter(current_request.user_id == User.id).first()
 
     if current_request.response:
-        return render_template('chat.html', chat_id='err', messages="Site not found!")
-
-    if request.method == 'POST':
-
+        return render_template('communication.html', error = True)
+    if request.method == 'POST' and 'confirm_loading' in request.form or 'cause_delay' in request.form  or 'confirm_unloading' in request.form:
         loading = request.form.get('confirm_loading')
         unloading = request.form.get('confirm_unloading')
         late_loading_value = request.form.get('late_loading')
@@ -91,7 +83,13 @@ def chat(chat_id):
                                     current_user.name, comment, get_cause(cause_delay, comment))
         current_request.response = True
         db.session.commit()
-    return render_template('SK.html', chat_id=chat_id, res=current_response, req=current_request)
+    if request.method == 'POST' and 'languages' in request.form:
+        selected_lang = request.form.get('languages')
+    else:
+        selected_lang = getLanguage(_get_user(), current_request.language)
+    lang_data = read_language_file('website/nazvy.txt', selected_lang)
+    
+    return render_template('communication.html', **lang_data, selected_language = selected_lang,  error = False, chat_id=chat_id, res=current_response, req=current_request)
 
 
 def write_response_to_excel(order_code, carrier, comment, dispatcher, issue_type, root_cause):
