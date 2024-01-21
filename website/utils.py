@@ -1,7 +1,6 @@
 from flask_mail import Mail, Message
 from .models import *
 from . import *
-from flask import current_app
 
 # Find user by id or email
 def find_user(id: int = None, email: str = None):
@@ -18,6 +17,8 @@ def find_request(id: int = None):
         if (id and req.id == id):
             return req
     return False
+
+
 
 def send_email(subject: str, body: str, email: str):
     app = Flask(__name__)
