@@ -1,7 +1,5 @@
 from . import db
 from flask_login import UserMixin
-from sqlalchemy.sql import func
-from datetime import datetime
 
 
 class User(db.Model, UserMixin):
@@ -38,6 +36,7 @@ class Request(db.Model):
     response = db.Column(db.Boolean)
     responses = db.relationship('Response', foreign_keys='Response.request_id')
     response_id = db.Column(db.String)
+    language = db.Column(db.String)
 
     def removeRequest(self):
         session = db.session
