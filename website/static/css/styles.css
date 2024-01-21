@@ -116,3 +116,12 @@ table tr:nth-child(odd) {
 table tr:first-child {
 	background-color: #d6d6d6;
 }
+
+#MAIN_TEXT {
+text-decoration: none;
+}
+
+#lang {
+float:right;
+padding-right:2.5%;
+}
