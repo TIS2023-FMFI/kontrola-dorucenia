@@ -33,46 +33,14 @@ def create_request():
         main_page_url = url_for('views.home', _external=True)
         website_link = f'{main_page_url}/{new_chat_id}'
 
+        new_request = Request(user_id=user_id, order_code=order_code, carrier_email=carrier_email, send_date=send_date, send_time=send_time, additional_message=additional_message, response=response, response_id  = new_chat_id)
+        db.session.add(new_request)
+        db.session.commit()
 
-        #ked uz sa na order (napr. T00000000) vytvoril nejaky request, tak sa nevytvara zase novy, ale updatuje sa ten stary aby
-        #bolo mozne sledovat celu komunikaciu medzi dispecerom ceva a dispecerom dopravcu
-        if Request.query.filter(Request.order_code == order_code).first():
+        new_response = Response(request_id = new_request.id, response_id = new_chat_id)
+        db.session.add(new_response)
+        db.session.commit()
 
-            new_request = Request.query.filter(Request.order_code == order_code).first()
-            new_request.send_date = send_date
-            new_request.send_time = send_time
-            new_request.additional_message = additional_message
-
-            # response_id je URL vygenerovanej requesty, cize to sa vzdy pri generovani novej requesty musi menit
-            # cize tento kod iba meni staru url za novu url
-            old_response_id = new_request.response_id
-            new_request.response_id = new_chat_id
-
-            new_response = Response.query.filter(Response.request_id == new_request.id).first()
-            new_response.response_id = new_chat_id
-
-            new_chat = Chat.query.filter(Chat.response_id == old_response_id).all()
-            for ch in new_chat:
-                ch.response_id = new_chat_id
-
-            db.session.commit()
-        # ked este request (napr. T0000..) neexistuje, tak sa vytvori request, vytvori sa response ktora patri
-        # requestu a trackuje vsetky udaje o objednavke,
-        # cize ci je kedy bude nalozena, ci je nalozena, kedy bude vylozena a ci je vylozena, taktiez sa vytvori chat
-        # ktory trackuje celu komunikaciu ktora sa zobrazuje na stranke SK.html
-        else:
-
-            new_request = Request(user_id=user_id, order_code=order_code, carrier_email=carrier_email, send_date=send_date, send_time=send_time, additional_message=additional_message, response=response, response_id  = new_chat_id)
-            db.session.add(new_request)
-            db.session.commit()
-
-            new_response = Response(request_id = new_request.id, loaded = False, unloaded = False, response_id = new_chat_id)
-            db.session.add(new_response)
-            db.session.commit()
-
-            new_chat = Chat(string="Čaká sa na potvrdenie času nákladky.", response_id=new_response.response_id)
-            db.session.add(new_chat)
-            db.session.commit()
 
         request_data = {'id': new_request.id, 'order_code': new_request.order_code, 'carrier_email': new_request.carrier_email, 'send_date': new_request.send_date, 'send_time': json.dumps(new_request.send_time, default=str)}
         scheduled_date = datetime.datetime(int(datelist[0]), int(datelist[1]), int(datelist[2]), int(timelist[0]), int(timelist[1]), 0)
@@ -105,11 +73,6 @@ def delete_requests():
             if not res.removeResponse():
                 return jsonify({'success': False})
 
-            chats = Chat.query.filter(Chat.response_id == req.response_id).all()
-
-            for ch in chats:
-                if not ch.removeChat():
-                    return jsonify({'success': False})
         return jsonify({'success': True})
     return jsonify({'success': False})
 

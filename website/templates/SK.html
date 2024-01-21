@@ -11,17 +11,12 @@
 	<p>Kontakt: </p>
 	<p>ŠPZ vozidla: </p>
 	<p>Objednávateľ: </p>
-	<p>Nakládka: {% if res.loaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
-	<p>Vykládka: {% if res.unloaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
+	<p>Nakládka: </p>
+	<p>Vykládka:</p>
 </section>
 
 <section id="main_section">
-	<section>
-		<legend> Stav objednávky : <br><br>
-			{% for ch in chat %}
-			{{ ch.string }} <br><br>
-			{% endfor %} </legend>
-	</section>
+
 	<h2>Potvrdenie stavu</h2>
 	
 	<section>

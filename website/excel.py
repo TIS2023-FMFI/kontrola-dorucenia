@@ -1,5 +1,5 @@
 import pandas as pd
-
+from datetime import datetime
 ORDERS_DOCUMENT_PATH = 'C:/kontrola-dorucenia/website/Databaza_2023_project.xlsm'
 ORDERS_SHEET_NAME = 'databaza'
 CARRIERS_DOCUMENT_PATH = 'C:/kontrola-dorucenia/website/databaza_dopravcov.xlsx'
@@ -62,3 +62,36 @@ class Carrier_Dispatcher:
         self.email = email
         self.contact = contact
         self.language = language
+
+
+RESPONSE_DOCUMENT_PATH = 'Evidencia_nezhod.xlsx'
+
+
+class Evidencia_nezhod:
+
+    def __init__(self):
+        # Load existing data from the Excel file if it exists
+        try:
+            self.data = pd.read_excel(RESPONSE_DOCUMENT_PATH)
+        except FileNotFoundError:
+            self.data = pd.DataFrame(columns=[
+                'číslo objednávky', 'dopravca', 'dátum', 'komentár',
+                'dispečer CEVA Logistic', 'typ nezhody', 'koreňová príčina'
+            ])
+
+    def add_response(self, order_code, carrier, comment, dispatcher, issue_type, root_cause):
+        today = datetime.today().strftime('%Y-%m-%d')
+        new_data = {
+            'číslo objednávky': order_code,
+            'dopravca': carrier,
+            'dátum': today,
+            'komentár': comment,
+            'dispečer CEVA Logistic': dispatcher,
+            'typ nezhody': issue_type,
+            'koreňová príčina': root_cause
+        }
+        self.data = pd.concat([self.data, pd.DataFrame([new_data])], ignore_index=True)
+
+    def write_to_excel(self):
+        self.data.to_excel(RESPONSE_DOCUMENT_PATH, index=False)
+

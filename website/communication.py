@@ -4,8 +4,10 @@ import secrets
 import string
 from collections import OrderedDict
 from . import db
+import pandas as pd
 
-from website.models import Request, Response, Chat
+from website.models import Request, Response, User
+from .excel import Evidencia_nezhod
 
 communication = Blueprint('communication', __name__)
 conversations = OrderedDict()
@@ -43,66 +45,65 @@ def chat(chat_id):
 
     current_response = current_response[0]
     current_request = current_request[0]
+    current_user = User.query.filter(current_request.user_id == User.id).first()
+
+    if current_request.response:
+        return render_template('chat.html', chat_id='err', messages="Site not found!")
 
     if request.method == 'POST':
 
-        #vsetky if-ka trackuju to, co sa zakliklo vo formulari SK.html- mohlo sa zakliknut len to ze sa uskutocnila nakladka,
-        # a zaroven aj vsetko naraz preto to je takto vyclenene
-
-        loaded_checkbox_value = request.form.get('loaded')
-        if loaded_checkbox_value == 'loaded' and not current_response.loaded:
-            add_new_chat("Nákladka sa vykoná v dohodnutom čase.", current_response)
-            current_response.load()
-
-        unloaded_checkbox_value = request.form.get('unloaded')
-        if unloaded_checkbox_value == 'unloaded' and not current_response.unloaded and current_response.loaded:
-            add_new_chat("Výkladka sa vykoná v dohodnutom čase.", current_response)
-            current_response.unload()
-
-        cause_delay = request.form.get('cause_delay')
-        if cause_delay:
-            current_response.set_root_cause(cause_delay)
-
-        comment = request.form.get('message')
-        if comment:
-            current_response.set_comment(comment)
-
+        loading = request.form.get('confirm_loading')
+        unloading = request.form.get('confirm_unloading')
+        late_loading_value = request.form.get('late_loading')
+        late_unloading_value = request.form.get('late_unloading')
         date = request.form.get('date')
         time = request.form.get('time')
+        cause_delay = request.form.get('cause_delay')
+        comment = request.form.get('message')
+        if not comment:
+            comment = "-"
+        if loading:
+            loaded_checkbox_value = request.form.get('loaded')
+            if loaded_checkbox_value == 'loaded':
+                write_response_to_excel(current_request.order_code, current_request.carrier_email,
+                                        "Nákladka je vykonaná.", current_user.name, "", "")
+            else:
+                write_response_to_excel(current_request.order_code, current_request.carrier_email,
+                                        "Nákladka sa vykoná v dohodnutom čase.", current_user.name, "", "")
+        elif unloading:
+            unloaded_checkbox_value = request.form.get('unloaded')
+            if unloaded_checkbox_value == 'unloaded':
+                write_response_to_excel(current_request.order_code, current_request.carrier_email,
+                                        "Výkladka je vykonaná.", current_user.name, "", "")
+            else:
+                write_response_to_excel(current_request.order_code, current_request.carrier_email,
+                                        "Výkladka sa vykoná v dohodnutom čase.", current_user.name, "", "")
+        elif late_loading_value:
+            write_response_to_excel(current_request.order_code, current_request.carrier_email,
+                                    ("Vozidlo bude meškať na nákladku z dôvodu " + get_cause(cause_delay, comment) + ". " +
+                                    "Predpokladaný čas nákladky: " + date + " " + time),
+                                    current_user.name, comment,  get_cause(cause_delay, comment))
+        elif late_unloading_value:
+            write_response_to_excel(current_request.order_code, current_request.carrier_email,
+                                    ("Vozidlo bude meškať na výkladku z dôvodu " + get_cause(cause_delay,
+                                                                                             comment) + ". " +
+                                     "Predpokladaný čas výkladky: " + date + " " + time),
+                                    current_user.name, comment, get_cause(cause_delay, comment))
+        current_request.response = True
+        db.session.commit()
+    return render_template('SK.html', chat_id=chat_id, res=current_response, req=current_request)
 
-        late_loading_value = request.form.get('late_loading')
-        if late_loading_value:
-            if not current_response.loaded:
-                current_response.set_loading_date(date)
-                current_response.set_loading_time(time)
-                current_response.set_delay_loading(True)
 
-                cause = get_cause(cause_delay, comment)
-
-                add_new_chat("Vozidlo bude meškať na nákladku z dôvodu " + cause + ".", current_response)
-                add_new_chat("Predpokladaný čas nákladky: " + date + " " + time, current_response)
-
-        late_unloading_value = request.form.get('late_unloading')
-        if late_unloading_value:
-            if not current_response.unloaded and current_response.loaded:
-                current_response.set_unloading_date(date)
-                current_response.set_unloading_time(time)
-                current_response.delay_unloading = True
-
-                cause = get_cause(cause_delay, comment)
-
-                add_new_chat("Vozidlo bude meškať na výkladku z dôvodu " + cause + ".", current_response)
-
-                add_new_chat("Predpokladaný čas výkladky: " + date + " " + time, current_response)
-
-    all_chat = Chat.query.filter(Chat.response_id == current_response.response_id).all()
-    return render_template('SK.html', chat_id=chat_id, res=current_response, req=current_request, chat=all_chat)
+def write_response_to_excel(order_code, carrier, comment, dispatcher, issue_type, root_cause):
+    response_manager = Evidencia_nezhod()
+    response_manager.add_response(order_code, carrier, comment, dispatcher, issue_type, root_cause)
+    response_manager.write_to_excel()
 
 
 def get_cause(cause_delay, comment):
     cause = get_root_cause(cause_delay)
-    if cause == 'Iný dôvod':
-        cause = comment
+    # if cause == 'Iný dôvod':
+    #     cause = comment
     return cause
 
 
@@ -120,8 +121,3 @@ def get_root_cause(case):
 
     return switch.get(case, None)
 
-
-def add_new_chat(text, current_response):
-    new_chat = Chat(string=text, response_id=current_response.response_id)
-    db.session.add(new_chat)
-    db.session.commit()
