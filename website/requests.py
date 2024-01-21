@@ -1,15 +1,14 @@
-from flask import Blueprint, render_template, request, flash, jsonify, current_app, url_for
+from flask import Blueprint, request, jsonify, url_for
 from flask_login import login_required, current_user
-from flask_mail import Mail, Message
 from . import db
 import json
 from .models import *
 from .utils import *
-import secrets
+from .excel import *
 import datetime
-from .views import home
 from apscheduler.schedulers.background import BackgroundScheduler
-from .communication import conversations, generate_random_url, deleteConversation, chat
+from .communication import generate_random_url
+
 
 requests = Blueprint('requests', __name__)
 scheduler = BackgroundScheduler(timezone="Europe/Bratislava")
@@ -32,8 +31,13 @@ def create_request():
         new_chat_id = generate_random_url()
         main_page_url = url_for('views.home', _external=True)
         website_link = f'{main_page_url}/{new_chat_id}'
-
-        new_request = Request(user_id=user_id, order_code=order_code, carrier_email=carrier_email, send_date=send_date, send_time=send_time, additional_message=additional_message, response=response, response_id  = new_chat_id)
+        lang = getLanguage(order_code, carrier_email)
+        if lang in ('CZ', 'SK'):
+            lang = 'SK'
+        else:
+            lang = 'EN'
+        new_request = Request(user_id=user_id, order_code=order_code, carrier_email=carrier_email,
+                              send_date=send_date, send_time=send_time, additional_message=additional_message, response=response, response_id  = new_chat_id, language = lang)
         db.session.add(new_request)
         db.session.commit()
 
@@ -75,18 +79,3 @@ def delete_requests():
 
         return jsonify({'success': True})
     return jsonify({'success': False})
-
-# @requests.route('/send-request/', methods=['GET', 'POST'])
-# @login_required
-# def request_function(): # toto sa nemoze volat request, pretoze nastane konflikt s request.method ! 
-#     subject = 'Hello from your Flask app!'
-#     body = 'This is a test email sent from a Flask app.'
-
-#     msg = Message(subject, sender='t402829@gmail.com', recipients=["testovanie84@gmail.com"])
-#     msg.body = body
-
-#     try:
-#         Mail(current_app).send(msg)
-#         return 'Email sent successfully!'
-#     except Exception as e:
-#         return 'Error sending email: ' + str(e)
