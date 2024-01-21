@@ -11,12 +11,6 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = b'hs8b9e256co648'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USE_SSL'] = False
-    app.config['MAIL_USERNAME'] = 't402829@gmail.com'
-    app.config['MAIL_PASSWORD'] = 'Pbui rzbg sabm swot '  # heslo od emailu
     db.init_app(app)
 
     from .views import views
