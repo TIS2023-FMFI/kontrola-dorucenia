@@ -6,7 +6,7 @@ import configparser
 from website.models import Request, Response, User
 from .excel import *
 from flask_login.utils import _get_user
-
+from .utils import *
 
 communication = Blueprint('communication', __name__)
 
@@ -66,24 +66,47 @@ def chat(chat_id):
 
         carrier = order.carrier
         dispatcher = current_user.name
+        email = current_user.email
+        text = ""
             
         if loading:
             
             loaded_checkbox_value = request.form.get('loaded')
-            
+            if loaded_checkbox_value == 'loaded':
+                text = "Nakládka je vykonaná"
+            else:
+                text = "Nakládka sa vykoná v dohodnutom čase"
+                
         elif unloading:
             
             unloaded_checkbox_value = request.form.get('unloaded')
+            
+            if unloaded_checkbox_value == 'unloaded':
+                text = "Vykládka je vykonaná"
+            else:
+                text = "Vykládka sa vykoná v dohodnutom čase"
+                
         elif late_loading_value:
 
             write_response_to_excel(order_code, carrier, "Nakládka", get_cause(cause_delay), comment, dispatcher)
+
+            text = f'Nakládka sa nevykoná v dohodnutom čase, predpokladaný dátum a čas príchodu:  {date} {time}' 
 
         elif late_unloading_value:
             
             write_response_to_excel(order_code, carrier, "Vykládka", get_cause(cause_delay), comment, dispatcher)
 
+            text = f'Vykládka sa nevykoná v dohodnutom čase, predpokladaný dátum a čas príchodu:  {date} {time}' 
+
         current_request.response = True
         db.session.commit()
+
+        try:
+            send_email(f'Odpoveď na požiadavku k objednávke {order_code}', text, email)
+            return render_template("after_response.html", **lang_data)
+        except Exception:
+            return render_template('communication.html', error = True)
+
         
         return render_template("after_response.html", **lang_data)
     

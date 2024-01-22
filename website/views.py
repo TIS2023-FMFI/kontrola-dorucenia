@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, flash, jsonify, url_for
 from flask_login import login_required, current_user
 from . import db
 from flask_bcrypt import Bcrypt
@@ -75,9 +75,9 @@ def reset_password():
         new_password = secrets.token_urlsafe(12)
         hashed_pass = Bcrypt().generate_password_hash(new_password)
         try:
-            send_email("New password", f'Your new password is {new_password}')
+            send_email("New password", f'Your new password is {new_password}', email)
             selected_user.changePassword(hashed_pass)
-            return render_template("login.html", user=current_user, message = "The Password has been sent to your email!")
+            return render_template("reset_password.html", user=current_user, message = "The Password has been sent to your email!")
         except Exception:
             return render_template("reset_password.html", user=current_user, message = "Error while sending a message!")
     return render_template("reset_password.html", user=current_user)
