@@ -7,7 +7,9 @@
 	</head>
 	<body>
 		<header>
+			<a id = "MAIN_TEXT" href="{{ url_for('views.home') }}">
 			<h1>CEVA Logistics</h1>
+			</a>
 		</header>
 		
 		{% if current_user.is_authenticated %}

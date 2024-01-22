@@ -1,8 +1,8 @@
 import pandas as pd
 from datetime import datetime
-ORDERS_DOCUMENT_PATH = 'C:/kontrola-dorucenia/website/Databaza_2023_project.xlsm'
+ORDERS_DOCUMENT_PATH = 'website/Databaza_2023_project.xlsm'
 ORDERS_SHEET_NAME = 'databaza'
-CARRIERS_DOCUMENT_PATH = 'C:/kontrola-dorucenia/website/databaza_dopravcov.xlsx'
+CARRIERS_DOCUMENT_PATH = 'website/databaza_dopravcov.xlsx'
 
 
 class Order:
@@ -95,3 +95,10 @@ class Evidencia_nezhod:
     def write_to_excel(self):
         self.data.to_excel(RESPONSE_DOCUMENT_PATH, index=False)
 
+
+def getLanguage(order_code, carrier_email):
+    order = Order(order_code)
+    carrier = Carrier(order.carrier)
+    for dispatcher in carrier.dispatchers:
+        if dispatcher.email == carrier_email:
+            return dispatcher.language
