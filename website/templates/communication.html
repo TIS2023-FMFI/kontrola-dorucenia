@@ -20,22 +20,17 @@
 <section>
 	<h2>{{details}} </h2>
 	<p>{{number}}: {{req.order_code}}</p>
-	<p>{{booking_ref}}: </p>
-	<p>{{supplier}}: </p>
-	<p>{{contact}}: </p>
-	<p>{{reg_number}}: </p>
-	<p>{{customer}}: </p>
-	<p>{{loading}}: {% if res.loaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
-	<p>{{unloading}}: {% if res.unloaded %} Vykonaná {% else %} Nevykonaná  {% endif %}</p>
+	<p>{{booking_ref}}: {{order.booking_reference}}</p>
+	<p>{{supplier}}: {{order.carrier}}</p>
+	<p>{{contact}}: {{req.carrier_email}}</p>
+	<p>{{reg_number}}: {{order.truck_plates}}</p>
+	<p>{{customer}}: {{order.client}}</p>
+	<p>{{loading}}: {{order.loading_city}} {{order.loading_date}} {{order.loading_time}} </p>
+	<p>{{unloading}}: {{order.delivery_city}} {{order.delivery_date}} {{order.delivery_time}}</p>
 </section>
 
+{% if not current_user.is_authenticated %}
 <section id="main_section">
-	<section>
-		<legend> Stav objednávky : <br><br>
-			{% for ch in chat %}
-			{{ ch.string }} <br><br>
-			{% endfor %} </legend>
-	</section>
 	<h2>{{status}}</h2>
 	
 	<section>
@@ -44,11 +39,11 @@
 				<legend>{{on_time}}</legend>
 				<p>{{confirm_loading}}<br>
 				<input type="checkbox" name="loaded" id="loaded" value="loaded" {% if res.loaded %}checked{% endif %}><label for="loaded">{{loaded}}</label>
-				<input type="submit" name="confirm_loading" id="confirm_loading" value="POTVRDIŤ NAKLÁDKU"></p>
+				<input type="submit" name="confirm_loading" id="confirm_loading" value="{{button_confirm_loading}}"></p>
 				<hr>
 				<p>{{confirm_unloading}}<br>
 				<input type="checkbox" name="unloaded" id="unloaded" value="unloaded" {% if res.unloaded %}checked{% endif %}><label for="unloaded">{{unloaded}}</label>
-				<input type="submit" name="confirm_unloading" id="confirm_unloading" value="POTVRDIŤ VYKLÁDKU"></p>
+				<input type="submit" name="confirm_unloading" id="confirm_unloading" value="{{button_confirm_unloading}}"></p>
 				
 			</fieldset>
 			
@@ -86,6 +81,7 @@
 	</section>
 
 </section>
+{% endif %}
 
 <script>
 var today = new Date();
@@ -134,5 +130,6 @@ function handleSelectChange() {
 }
 
 </script>
+
 {% endif %}
 {% endblock %}

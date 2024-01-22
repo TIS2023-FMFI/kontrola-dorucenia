@@ -31,6 +31,12 @@ def home():
     requests_without_response = Request.query.filter(Request.response == False)
     return render_template("order_search.html", user=current_user, requests=requests_without_response, curr_url= request.url)
 
+@views.route('/order_detail/', methods=['GET', 'POST'])
+@login_required
+def order_detail():
+
+    return render_template("order_detail.html", user=current_user)
+
 @views.route('/get_users', methods=['GET'])
 def get_users():
     users = User.query.all()

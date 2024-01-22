@@ -14,6 +14,7 @@ class Order:
         if not rows.empty:
             indices = list(rows.index.values)
             first_index = indices[0]
+            self.client = rows.loc[first_index, 'CLIENT']
             self.loading_ctr = rows.loc[first_index, 'LOADING CTR']
             self.loading_zip = rows.loc[first_index, 'LOADING ZIP']
             self.loading_city = rows.loc[first_index, 'LOADING CITY']
@@ -75,20 +76,20 @@ class Evidencia_nezhod:
             self.data = pd.read_excel(RESPONSE_DOCUMENT_PATH)
         except FileNotFoundError:
             self.data = pd.DataFrame(columns=[
-                'číslo objednávky', 'dopravca', 'dátum', 'komentár',
-                'dispečer CEVA Logistic', 'typ nezhody', 'koreňová príčina'
+                'INES carrier file', 'Date', 'Responsible´s name',
+                'Type of non-conformity', 'Root cause', 'Comment', 'Recorded by'
             ])
 
-    def add_response(self, order_code, carrier, comment, dispatcher, issue_type, root_cause):
+    def add_response(self, order_code, carrier, non_conformity, root_cause, comment, dispatcher):
         today = datetime.today().strftime('%Y-%m-%d')
         new_data = {
-            'číslo objednávky': order_code,
-            'dopravca': carrier,
-            'dátum': today,
-            'komentár': comment,
-            'dispečer CEVA Logistic': dispatcher,
-            'typ nezhody': issue_type,
-            'koreňová príčina': root_cause
+            'INES carrier file': order_code,
+            'Date': today,
+            'Responsible´s name': carrier,
+            'Type of non-conformity': non_conformity,
+            'Root cause': root_cause,
+            'Comment': comment,
+            'Recorded by': dispatcher
         }
         self.data = pd.concat([self.data, pd.DataFrame([new_data])], ignore_index=True)
 

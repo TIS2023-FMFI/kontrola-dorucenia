@@ -29,8 +29,11 @@ traffic_situation=Dopravná situácia
 other=Iný dôvod
 date=Vyberte predpokladaný dátum a čas príchodu
 message=Komentár
+button_confirm_loading=POTVRDIŤ NÁKLADKU
+button_confirm_unloading=POTVRDIŤ VÝKLADKU
 button_late_loading=MEŠKÁ NA NAKLÁDKU
 button_late_unloading=MEŠKÁ NA VYKLÁDKU
+
 
 [EN]
 details=Order details
@@ -63,5 +66,7 @@ traffic_situation=Traffic situation
 other=Another reason
 date=Estimated date and time of arrival
 message=Comment
+button_confirm_loading=CONFIRM LOADING
+button_confirm_unloading=CONFIRM UNLOADING
 button_late_loading=LATE FOR LOADING
 button_late_unloading=LATE FOR UNLOADING
