@@ -19,6 +19,7 @@ section{
 	clear:none;
 	height: 290px;
 }
+
 #password_change{
 	margin: 1% 21% 6% 2%;
 	padding: 2% 1%;
@@ -41,6 +42,11 @@ section{
 	float:none;
 	clear:both;
 	border: 1px solid #29323d;
+}
+#notification{
+	margin: 2em 5em;
+	padding: 2em 5em 2em 3em;
+	clear:none;
 }
 hr{
 	border: 1px solid #d9dad7;

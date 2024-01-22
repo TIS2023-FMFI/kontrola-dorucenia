@@ -45,7 +45,6 @@ def create_request():
         db.session.add(new_response)
         db.session.commit()
 
-
         request_data = {'id': new_request.id, 'order_code': new_request.order_code, 'carrier_email': new_request.carrier_email, 'send_date': new_request.send_date, 'send_time': json.dumps(new_request.send_time, default=str)}
         scheduled_date = datetime.datetime(int(datelist[0]), int(datelist[1]), int(datelist[2]), int(timelist[0]), int(timelist[1]), 0)
         scheduler.add_job(send_email, 'date', args=['Communication',  f'{website_link}\n{additional_message}', carrier_email], run_date=scheduled_date)

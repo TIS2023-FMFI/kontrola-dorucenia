@@ -34,5 +34,3 @@ def send_email(subject: str, body: str, email: str):
         msg = Message(subject, sender='t402829@gmail.com', recipients=[email])
         msg.body = body
         return Mail(app).send(msg)
-    
-    

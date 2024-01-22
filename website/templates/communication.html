@@ -5,7 +5,9 @@
 {% block content %}
 
 {% if error %}
+<section id="notification">
     <h1 class="notifications">Site not found!</h1>
+</section>
 {% endif %}
 
 {% if not error %}
@@ -39,11 +41,11 @@
 				<legend>{{on_time}}</legend>
 				<p>{{confirm_loading}}<br>
 				<input type="checkbox" name="loaded" id="loaded" value="loaded" {% if res.loaded %}checked{% endif %}><label for="loaded">{{loaded}}</label>
-				<input type="submit" name="confirm_loading" id="confirm_loading" value="{{button_confirm_loading}}"></p>
+				<input type="submit" name="confirm_loading" id="confirm_loading" value="{{button_confirm_load}}"></p>
 				<hr>
 				<p>{{confirm_unloading}}<br>
 				<input type="checkbox" name="unloaded" id="unloaded" value="unloaded" {% if res.unloaded %}checked{% endif %}><label for="unloaded">{{unloaded}}</label>
-				<input type="submit" name="confirm_unloading" id="confirm_unloading" value="{{button_confirm_unloading}}"></p>
+				<input type="submit" name="confirm_unloading" id="confirm_unloading" value="{{button_confirm_unload}}"></p>
 				
 			</fieldset>
 			

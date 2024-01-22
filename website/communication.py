@@ -44,6 +44,12 @@ def chat(chat_id):
 
     if current_request.response:
         return render_template('communication.html', error = True)
+   
+    if request.method == 'POST' and 'languages' in request.form:
+        selected_lang = request.form.get('languages')
+    else:
+        selected_lang = getLanguage(_get_user(), current_request.language)
+    lang_data = read_language_file('website/nazvy.txt', selected_lang)
     
     if request.method == 'POST' and 'confirm_loading' in request.form or 'cause_delay' in request.form  or 'confirm_unloading' in request.form:
         loading = request.form.get('confirm_loading')
@@ -62,46 +68,24 @@ def chat(chat_id):
         dispatcher = current_user.name
             
         if loading:
-            #send email
             
             loaded_checkbox_value = request.form.get('loaded')
-##            if loaded_checkbox_value == 'loaded':
-##                write_response_to_excel(current_request.order_code, current_request.carrier_email,
-##                                        "Nákladka je vykonaná.", current_user.name, "", "")
-##            else:
-##                write_response_to_excel(current_request.order_code, current_request.carrier_email,
-##                                        "Nákladka sa vykoná v dohodnutom čase.", current_user.name, "", "")
+            
         elif unloading:
-
-            #send email
             
             unloaded_checkbox_value = request.form.get('unloaded')
-##            if unloaded_checkbox_value == 'unloaded':
-##                write_response_to_excel(current_request.order_code, current_request.carrier_email,
-##                                        "Výkladka je vykonaná.", current_user.name, "", "")
-##            else:
-##                write_response_to_excel(current_request.order_code, current_request.carrier_email,
-##                                        "Výkladka sa vykoná v dohodnutom čase.", current_user.name, "", "")
         elif late_loading_value:
-
-            #send email
 
             write_response_to_excel(order_code, carrier, "Nakládka", get_cause(cause_delay), comment, dispatcher)
 
         elif late_unloading_value:
-
-            #send email
             
             write_response_to_excel(order_code, carrier, "Vykládka", get_cause(cause_delay), comment, dispatcher)
 
         current_request.response = True
         db.session.commit()
         
-    if request.method == 'POST' and 'languages' in request.form:
-        selected_lang = request.form.get('languages')
-    else:
-        selected_lang = getLanguage(_get_user(), current_request.language)
-    lang_data = read_language_file('website/nazvy.txt', selected_lang)
+        return render_template("after_response.html", **lang_data)
     
     return render_template('communication.html', **lang_data, selected_language = selected_lang,  error = False, chat_id=chat_id, res=current_response, req=current_request, order=order)
 
