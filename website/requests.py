@@ -32,10 +32,7 @@ def create_request():
         main_page_url = url_for('views.home', _external=True)
         website_link = f'{main_page_url}/{new_chat_id}'
         lang = getLanguage(order_code, carrier_email)
-        if lang in ('CZ', 'SK'):
-            lang = 'SK'
-        else:
-            lang = 'EN'
+
         new_request = Request(user_id=user_id, order_code=order_code, carrier_email=carrier_email,
                               send_date=send_date, send_time=send_time, additional_message=additional_message, response=response, response_id  = new_chat_id, language = lang)
         db.session.add(new_request)

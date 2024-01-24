@@ -10,7 +10,7 @@ from .utils import *
 
 communication = Blueprint('communication', __name__)
 
-
+LANGUAGES_DOCUMENT_PATH = 'website/nazvy.txt'
 
 def generate_random_url() -> str:
     characters = string.ascii_letters + string.digits
@@ -23,6 +23,10 @@ def read_language_file(file_path, lang_code):
     config.read(file_path,encoding='utf-8')
     return config[lang_code]
 
+def get_language_options(file_path):
+    config = configparser.ConfigParser()
+    config.read(file_path,encoding='utf-8')
+    return config.sections()
 
 def getLanguage(user, selected_lang):
     return 'SK' if isinstance(user, User) else selected_lang
@@ -44,12 +48,14 @@ def chat(chat_id):
 
     if current_request.response:
         return render_template('communication.html', error = True)
-   
+
+    language_options = get_language_options(LANGUAGES_DOCUMENT_PATH)
+
     if request.method == 'POST' and 'languages' in request.form:
         selected_lang = request.form.get('languages')
     else:
         selected_lang = getLanguage(_get_user(), current_request.language)
-    lang_data = read_language_file('website/nazvy.txt', selected_lang)
+    lang_data = read_language_file(LANGUAGES_DOCUMENT_PATH, selected_lang)
     
     if request.method == 'POST' and 'confirm_loading' in request.form or 'cause_delay' in request.form  or 'confirm_unloading' in request.form:
         loading = request.form.get('confirm_loading')
@@ -103,14 +109,11 @@ def chat(chat_id):
 
         try:
             send_email(f'Odpoveď na požiadavku k objednávke {order_code}', text, email)
-            return render_template("after_response.html", **lang_data)
+            return render_template("after_response.html",  **lang_data)
         except Exception:
             return render_template('communication.html', error = True)
-
         
-        return render_template("after_response.html", **lang_data)
-    
-    return render_template('communication.html', **lang_data, selected_language = selected_lang,  error = False, chat_id=chat_id, res=current_response, req=current_request, order=order)
+    return render_template('communication.html', **lang_data, selected_language = selected_lang,  error = False, chat_id=chat_id, res=current_response, req=current_request, order=order, language_options=language_options)
 
 
 def write_response_to_excel(order_code, carrier, non_conformity, root_cause, comment, dispatcher):

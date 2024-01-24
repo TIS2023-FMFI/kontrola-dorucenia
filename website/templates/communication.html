@@ -14,8 +14,9 @@
 <div id ='lang'>
 	<form action="{{ url_for('communication.chat', chat_id=chat_id) }}" method="POST">
         <select id="languages" name="languages" onchange="this.form.submit()">
-            <option value="SK" {% if selected_language == 'SK' %}selected{% endif %}>Slovak</option>
-            <option value="EN" {% if selected_language == 'EN' %}selected{% endif %}>English</option>
+			{% for lang in language_options %}
+				<option value={{ lang }} {% if selected_language == lang %}selected{% endif %}>{{ lang }}</option>
+			{% endfor %}
         </select>
 	</input>
 	</div>
