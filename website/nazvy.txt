@@ -31,6 +31,7 @@ date=Vyberte predpokladaný dátum a čas príchodu
 message=Komentár
 button_late_loading=MEŠKÁ NA NAKLÁDKU
 button_late_unloading=MEŠKÁ NA VYKLÁDKU
+after_response=Ďakujeme za Vašu odpoveď
 
 [EN]
 details=Order details
@@ -65,3 +66,4 @@ date=Estimated date and time of arrival
 message=Comment
 button_late_loading=LATE FOR LOADING
 button_late_unloading=LATE FOR UNLOADING
+after_response=Thank You for your response

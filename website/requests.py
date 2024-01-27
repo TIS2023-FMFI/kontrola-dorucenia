@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from . import db
 import json
@@ -32,10 +32,7 @@ def create_request():
         main_page_url = url_for('views.home', _external=True)
         website_link = f'{main_page_url}/{new_chat_id}'
         lang = getLanguage(order_code, carrier_email)
-        if lang in ('CZ', 'SK'):
-            lang = 'SK'
-        else:
-            lang = 'EN'
+
         new_request = Request(user_id=user_id, order_code=order_code, carrier_email=carrier_email,
                               send_date=send_date, send_time=send_time, additional_message=additional_message, response=response, response_id  = new_chat_id, language = lang)
         db.session.add(new_request)
@@ -44,7 +41,6 @@ def create_request():
         new_response = Response(request_id = new_request.id, response_id = new_chat_id)
         db.session.add(new_response)
         db.session.commit()
-
 
         request_data = {'id': new_request.id, 'order_code': new_request.order_code, 'carrier_email': new_request.carrier_email, 'send_date': new_request.send_date, 'send_time': json.dumps(new_request.send_time, default=str)}
         scheduled_date = datetime.datetime(int(datelist[0]), int(datelist[1]), int(datelist[2]), int(timelist[0]), int(timelist[1]), 0)

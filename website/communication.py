@@ -4,13 +4,13 @@ import string
 from . import db
 import configparser
 from website.models import Request, Response, User
-from .excel import Evidencia_nezhod
+from .excel import *
 from flask_login.utils import _get_user
-
+from .utils import *
 
 communication = Blueprint('communication', __name__)
 
-
+LANGUAGES_DOCUMENT_PATH = 'website/nazvy.txt'
 
 def generate_random_url() -> str:
     characters = string.ascii_letters + string.digits
@@ -23,7 +23,10 @@ def read_language_file(file_path, lang_code):
     config.read(file_path,encoding='utf-8')
     return config[lang_code]
 
-
+def get_language_options(file_path):
+    config = configparser.ConfigParser()
+    config.read(file_path,encoding='utf-8')
+    return config.sections()
 
 def getLanguage(user, selected_lang):
     return 'SK' if isinstance(user, User) else selected_lang
@@ -40,9 +43,20 @@ def chat(chat_id):
     current_response = current_response[0]
     current_request = current_request[0]
     current_user = User.query.filter(current_request.user_id == User.id).first()
+    order_code = current_request.order_code
+    order = Order(order_code)
 
     if current_request.response:
         return render_template('communication.html', error = True)
+
+    language_options = get_language_options(LANGUAGES_DOCUMENT_PATH)
+
+    if request.method == 'POST' and 'languages' in request.form:
+        selected_lang = request.form.get('languages')
+    else:
+        selected_lang = getLanguage(_get_user(), current_request.language)
+    lang_data = read_language_file(LANGUAGES_DOCUMENT_PATH, selected_lang)
+    
     if request.method == 'POST' and 'confirm_loading' in request.form or 'cause_delay' in request.form  or 'confirm_unloading' in request.form:
         loading = request.form.get('confirm_loading')
         unloading = request.form.get('confirm_unloading')
@@ -52,57 +66,64 @@ def chat(chat_id):
         time = request.form.get('time')
         cause_delay = request.form.get('cause_delay')
         comment = request.form.get('message')
+        
         if not comment:
             comment = "-"
+
+        carrier = order.carrier
+        dispatcher = current_user.name
+        email = current_user.email
+        text = ""
+            
         if loading:
+            
             loaded_checkbox_value = request.form.get('loaded')
             if loaded_checkbox_value == 'loaded':
-                write_response_to_excel(current_request.order_code, current_request.carrier_email,
-                                        "Nákladka je vykonaná.", current_user.name, "", "")
+                text = "Nakládka je vykonaná"
             else:
-                write_response_to_excel(current_request.order_code, current_request.carrier_email,
-                                        "Nákladka sa vykoná v dohodnutom čase.", current_user.name, "", "")
+                text = "Nakládka sa vykoná v dohodnutom čase"
+                
         elif unloading:
+            
             unloaded_checkbox_value = request.form.get('unloaded')
+            
             if unloaded_checkbox_value == 'unloaded':
-                write_response_to_excel(current_request.order_code, current_request.carrier_email,
-                                        "Výkladka je vykonaná.", current_user.name, "", "")
+                text = "Vykládka je vykonaná"
             else:
-                write_response_to_excel(current_request.order_code, current_request.carrier_email,
-                                        "Výkladka sa vykoná v dohodnutom čase.", current_user.name, "", "")
+                text = "Vykládka sa vykoná v dohodnutom čase"
+                
         elif late_loading_value:
-            write_response_to_excel(current_request.order_code, current_request.carrier_email,
-                                    ("Vozidlo bude meškať na nákladku z dôvodu " + get_cause(cause_delay, comment) + ". " +
-                                    "Predpokladaný čas nákladky: " + date + " " + time),
-                                    current_user.name, comment,  get_cause(cause_delay, comment))
+
+            write_response_to_excel(order_code, carrier, "Nakládka", get_cause(cause_delay), comment, dispatcher)
+
+            text = f'Nakládka sa nevykoná v dohodnutom čase, predpokladaný dátum a čas príchodu:  {date} {time}' 
+
         elif late_unloading_value:
-            write_response_to_excel(current_request.order_code, current_request.carrier_email,
-                                    ("Vozidlo bude meškať na výkladku z dôvodu " + get_cause(cause_delay,
-                                                                                             comment) + ". " +
-                                     "Predpokladaný čas výkladky: " + date + " " + time),
-                                    current_user.name, comment, get_cause(cause_delay, comment))
+            
+            write_response_to_excel(order_code, carrier, "Vykládka", get_cause(cause_delay), comment, dispatcher)
+
+            text = f'Vykládka sa nevykoná v dohodnutom čase, predpokladaný dátum a čas príchodu:  {date} {time}' 
+
         current_request.response = True
         db.session.commit()
-    if request.method == 'POST' and 'languages' in request.form:
-        selected_lang = request.form.get('languages')
-    else:
-        selected_lang = getLanguage(_get_user(), current_request.language)
-    lang_data = read_language_file('website/nazvy.txt', selected_lang)
-    
-    return render_template('communication.html', **lang_data, selected_language = selected_lang,  error = False, chat_id=chat_id, res=current_response, req=current_request)
+
+        try:
+            send_email(f'Odpoveď na požiadavku k objednávke {order_code}', text, email)
+            return render_template("after_response.html",  **lang_data)
+        except Exception:
+            return render_template('communication.html', error = True)
+        
+    return render_template('communication.html', **lang_data, selected_language = selected_lang,  error = False, chat_id=chat_id, res=current_response, req=current_request, order=order, language_options=language_options)
 
 
-def write_response_to_excel(order_code, carrier, comment, dispatcher, issue_type, root_cause):
+def write_response_to_excel(order_code, carrier, non_conformity, root_cause, comment, dispatcher):
     response_manager = Evidencia_nezhod()
-    response_manager.add_response(order_code, carrier, comment, dispatcher, issue_type, root_cause)
+    response_manager.add_response(order_code, carrier, non_conformity, root_cause, comment, dispatcher)
     response_manager.write_to_excel()
 
 
-def get_cause(cause_delay, comment):
-    cause = get_root_cause(cause_delay)
-    # if cause == 'Iný dôvod':
-    #     cause = comment
-    return cause
+def get_cause(cause_delay):
+    return get_root_cause(cause_delay)
 
 
 def get_root_cause(case):
