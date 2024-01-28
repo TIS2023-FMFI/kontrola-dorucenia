@@ -4,10 +4,10 @@
 
 {% block content %}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<section>
-	<form method="post">
-		<fieldset>
-			<legend>Poslanie požiadavky</legend>
+<section class = 'container'>
+	<form class="d-flex flex-column align-items-center justify-content-center" method="post">
+		<fieldset class = 'mb-3'>
+			<legend class = 'h2 mb-0 text-center'>Poslanie požiadavky</legend>
 			<p><label for="order_code">Číslo objednávky:</label> <br> 
 			<input type="text" name="order_code" id="order_code" size="20" required></p>
 		</fieldset>
@@ -15,12 +15,12 @@
 	</form>
 </section>
 
-<section>
-    <form method="post" id="deleteRequestsForm">
-        <fieldset>
+<section class = 'container'>
+    <form class = "d-flex flex-column align-items-center justify-content-center" method="post" id="deleteRequestsForm">
+        <fieldset class = 'mb-3'>
             <legend>Požiadavky bez odpovede</legend>
         </fieldset>
-        <table border="1" width="600">
+        <table border="1" width="600" style = "overflow-x: scroll; display: block; margin : 0 auto; max-width: fit-content;">
             <tr>
                 <th>Delete</th><th>ID</th><th>Číslo objednávky</th><th>Email dispečera</th><th>Dátum poslania</th><th>Čas poslania</th><th>Detaily objednávky</ht>
             </tr>
