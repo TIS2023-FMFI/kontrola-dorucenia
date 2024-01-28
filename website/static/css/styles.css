@@ -28,6 +28,34 @@ section{
 	clear:none;	
 	height: 290px;
 }
+
+
+#prihlas {
+	margin: -30px;
+	}
+@media (max-width: 768px) {
+    section {
+        margin: 3% 0% 0% 0%;
+        padding: 1.5em;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        
+    }
+    
+    #prihlas {
+    	margin : 0%;
+    }
+    
+    #user_info, #password_change {
+        margin: 3% 0% 0% 0%;
+        padding: initial;
+        width : initial;
+        float: initial;
+        height: initial;
+        
+    }
+}
+
 #main_section{
 	background-color:#f8f8f8;
 	padding:1em;
@@ -93,8 +121,16 @@ input[type="submit"]{
 }
 nav{
 	text-align: center;
-	height: 20px;
 	padding-top: 0.7em;
+}
+
+
+
+@media screen and (max-width: 768px) {
+  nav {
+    display: flex;
+    flex-direction: column;
+  }
 }
 a{
 	margin: 0em 1em 0em 1em;
@@ -131,3 +167,6 @@ text-decoration: none;
 float:right;
 padding-right:2.5%;
 }
+
+
+
