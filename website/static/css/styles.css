@@ -47,8 +47,8 @@ section{
     }
     
     #user_info, #password_change {
-        margin: 3% 0% 0% 0%;
-        padding: initial;
+        margin: 2% auto 2% auto;
+        padding: 10%;
         width : initial;
         float: initial;
         height: initial;
