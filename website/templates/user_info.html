@@ -4,35 +4,35 @@
 
 {% block content %}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<section id="user_info">
-	<h2>Informácie o používateľovi</h2>
-	<p>Meno: {{ user.name }}</p>
-	<p>Emailová adresa: {{ user.email }}</p>
-	<p>Práva administrátora: {% if user.admin == True %}
+<section  class = 'container d-flex flex-column align-items-center justify-content-center' id="user_info">
+    <h2>Informácie o používateľovi</h2>
+    <p>Meno: {{ user.name }}</p>
+    <p>Emailová adresa: {{ user.email }}</p>
+    <p>Práva administrátora: {% if user.admin == True %}
         Áno
     {% else %}
         Nie</p>
-	{% endif %}
+    {% endif %}
 </section>
 
-<section id = "password_change">
-	<form method="post" id="change_password">
-		<fieldset>
-			<legend>Zmena hesla</legend>
-			<p><label for="actual_password">Aktuálne heslo:</label> <br>
-			<input type="password" name="actual_password" id="heslo" size="20" required></p>
-			<p><label for="new_password">Nové heslo:</label> <br>
-			<input type="password" name="new_password" id="nove_heslo" size="20" required></p>
-		</fieldset>
-		<p><input type="submit" name="prihlas" id="prihlas" value="ZMENIŤ HESLO"></p>
-	</form>
+<section class = 'container' id="password_change">
+    <form class="d-flex flex-column align-items-center justify-content-center" method="post" id="change_password">
+        <fieldset class="mb-3">
+            <legend class="h2 mb-0 text-center">Zmena hesla</legend>
+            <p><label for="actual_password">Aktuálne heslo:</label> <br>
+            <input type="password" name="actual_password" id="heslo" size="20" required></p>
+            <p><label for="new_password">Nové heslo:</label> <br>
+            <input type="password" name="new_password" id="nove_heslo" size="20" required></p>
+        </fieldset>
+        <p><input type="submit" id="prihlas" value="ZMENIŤ HESLO" style="text-align: center;"></p>
+    </form>
 </section>
 
 {% if user.admin == True %}
-<section>
-    <form method="post" id="addUserForm">
-        <fieldset>
-            <legend>Pridanie nového používateľa</legend>
+<section class = 'container'>
+    <form class = "d-flex flex-column align-items-center justify-content-center" method="post" id="addUserForm">
+        <fieldset class="mb-3">
+            <legend class = "h2 mb-0 text-center">Pridanie nového používateľa</legend>
             <p><label for="name">Meno:</label> <br>
             <input type="text" name="name" id="name" size="20" required></p>
             <p><label for="mail">Emailová adresa:</label> <br>
@@ -47,12 +47,12 @@
 
 
 
-<section>
-    <form method="post" id="deleteUsersForm">
-        <fieldset>
+<section class = 'container'>
+    <form class = "d-flex flex-column align-items-center justify-content-center" method="post" id="deleteUsersForm">
+        <fieldset class = 'mb-3'>
             <legend>Vymazanie používateľa</legend>
         </fieldset>
-        <table border="1">
+        <table border="1"  style = "overflow-x: scroll; display: block; margin : 0 auto; max-width: fit-content;">
             <tr>
                 <th>Delete</th><th>ID</th><th>Admin</th><th>Meno</th><th>Email</th>
             </tr>

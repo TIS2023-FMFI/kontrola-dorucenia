@@ -5,9 +5,9 @@
 {% block content %}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<section>
-	<form method="post" id="createRequestForm">
-		<fieldset>
+<section class = 'container'>
+	<form class = 'd-flex flex-column align-items-center justify-content-center' method="post" id="createRequestForm">
+		<fieldset class = "mb-3">
 			<legend>Poslanie požiadavky</legend>
 			<p><label for="order_code">Číslo objednávky:</label> <br> 
 			<input type="text" name="order_code" id="order_code" size="20" required readonly value={{ order_code }}></p>
