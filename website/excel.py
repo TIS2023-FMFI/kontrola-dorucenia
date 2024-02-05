@@ -94,7 +94,16 @@ class Evidencia_nezhod:
         self.data = pd.concat([self.data, pd.DataFrame([new_data])], ignore_index=True)
 
     def write_to_excel(self):
-        self.data.to_excel(RESPONSE_DOCUMENT_PATH, index=False)
+        df = self.data
+        writer = pd.ExcelWriter(RESPONSE_DOCUMENT_PATH)
+        df.to_excel(writer, sheet_name='sheetName', index=False, na_rep='NaN')
+
+        for column in df:
+            column_length = max(df[column].astype(str).map(len).max(), len(column))
+            col_idx = df.columns.get_loc(column)
+            writer.sheets['sheetName'].set_column(col_idx, col_idx, column_length)
+
+        writer.close()
 
 
 def getLanguage(order_code, carrier_email):
