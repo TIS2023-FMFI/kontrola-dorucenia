@@ -44,7 +44,31 @@ def create_request():
 
         request_data = {'id': new_request.id, 'order_code': new_request.order_code, 'carrier_email': new_request.carrier_email, 'send_date': new_request.send_date, 'send_time': json.dumps(new_request.send_time, default=str)}
         scheduled_date = datetime.datetime(int(datelist[0]), int(datelist[1]), int(datelist[2]), int(timelist[0]), int(timelist[1]), 0)
-        scheduler.add_job(send_email, 'date', args=['Communication',  f'{website_link}\n{additional_message}', carrier_email], run_date=scheduled_date)
+
+        text = f"""Dobrý deň,
+blíži sa čas nákladky/vykládky
+
+Číslo objednávky {order_code}
+
+Prosím, zobrazte si detaily objednávky a potvrďte stav kliknutím na odkaz
+
+{website_link}
+
+
+Hello,
+approaching the time of loading/unloading
+
+Order number {order_code}
+
+Please view order details and confirm us status by clicking the link
+
+{website_link}
+
+{additional_message}
+
+"""
+
+        scheduler.add_job(send_email, 'date', args=['Communication', text, carrier_email], run_date=scheduled_date)
         if not scheduler.running:
             scheduler.start()
         return jsonify({'success': True, 'request': request_data})
