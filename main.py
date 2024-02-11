@@ -1,5 +1,3 @@
-
-from flask_mail import Mail, Message
 from website import create_app
 
 app = create_app()
