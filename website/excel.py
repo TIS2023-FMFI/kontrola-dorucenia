@@ -76,16 +76,24 @@ class Evidencia_nezhod:
             self.data = pd.read_excel(RESPONSE_DOCUMENT_PATH)
         except FileNotFoundError:
             self.data = pd.DataFrame(columns=[
-                'INES carrier file', 'Date', 'Responsible´s name',
+                'INES carrier file', 'Date of record', 'Responsible´s name',
+                'Loading date', 'Loading time', 'Unloading date',
+                'Unloading time', 'New date', 'New time',
                 'Type of non-conformity', 'Root cause', 'Comment', 'Recorded by'
             ])
 
-    def add_response(self, order_code, carrier, non_conformity, root_cause, comment, dispatcher):
+    def add_response(self, order_code, order, carrier, date, time, non_conformity, root_cause, comment, dispatcher):
         today = datetime.today().strftime('%Y-%m-%d')
         new_data = {
             'INES carrier file': order_code,
-            'Date': today,
+            'Date of record': today,
             'Responsible´s name': carrier,
+            'Loading date': str(order.loading_date).split(' ')[0],
+            'Loading time': order.loading_time,
+            'Unloading date': str(order.delivery_date).split(' ')[0],
+            'Unloading time': order.delivery_time,
+            'New date': date,
+            'New time': time,
             'Type of non-conformity': non_conformity,
             'Root cause': root_cause,
             'Comment': comment,

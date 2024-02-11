@@ -73,36 +73,42 @@ def chat(chat_id):
         carrier = order.carrier
         dispatcher = current_user.name
         email = current_user.email
-        text = ""
+        text = f'Odpoveď na požiadavku k objednávke {order_code} od dispečera {current_request.carrier_email} dopravcu {order.carrier}\n\n'
             
         if loading:
             
             loaded_checkbox_value = request.form.get('loaded')
             if loaded_checkbox_value == 'loaded':
-                text = "Nakládka je vykonaná"
+                text += "Nakládka je vykonaná"
             else:
-                text = "Nakládka sa vykoná v dohodnutom čase"
+                text += "Nakládka sa vykoná v dohodnutom čase"
                 
         elif unloading:
             
             unloaded_checkbox_value = request.form.get('unloaded')
             
             if unloaded_checkbox_value == 'unloaded':
-                text = "Vykládka je vykonaná"
+                text += "Vykládka je vykonaná"
             else:
-                text = "Vykládka sa vykoná v dohodnutom čase"
+                text += "Vykládka sa vykoná v dohodnutom čase"
                 
         elif late_loading_value:
 
-            write_response_to_excel(order_code, carrier, "Nakládka", get_cause(cause_delay), comment, dispatcher)
+            write_response_to_excel(order_code, order, carrier, date, time, "Nakládka", get_cause(cause_delay), comment, dispatcher)
 
-            text = f'Nakládka sa nevykoná v dohodnutom čase, predpokladaný dátum a čas príchodu:  {date} {time}' 
+            text += f"""Nakládka sa nevykoná v dohodnutom čase, predpokladaný dátum a čas príchodu:  {date} {time}
+
+Dôvod meškania:  {get_cause(cause_delay)}  {comment}
+"""
 
         elif late_unloading_value:
             
-            write_response_to_excel(order_code, carrier, "Vykládka", get_cause(cause_delay), comment, dispatcher)
+            write_response_to_excel(order_code, order, carrier, date, time, "Vykládka", get_cause(cause_delay), comment, dispatcher)
 
-            text = f'Vykládka sa nevykoná v dohodnutom čase, predpokladaný dátum a čas príchodu:  {date} {time}' 
+            text += f"""Vykládka sa nevykoná v dohodnutom čase, predpokladaný dátum a čas príchodu:  {date} {time}
+
+Dôvod meškania:  {get_cause(cause_delay)}  {comment}
+"""
 
         current_request.response = True
         db.session.commit()
@@ -116,9 +122,9 @@ def chat(chat_id):
     return render_template('communication.html', **lang_data, selected_language = selected_lang,  error = False, chat_id=chat_id, res=current_response, req=current_request, order=order, language_options=language_options)
 
 
-def write_response_to_excel(order_code, carrier, non_conformity, root_cause, comment, dispatcher):
+def write_response_to_excel(order_code, order, carrier, date, time, non_conformity, root_cause, comment, dispatcher):
     response_manager = Evidencia_nezhod()
-    response_manager.add_response(order_code, carrier, non_conformity, root_cause, comment, dispatcher)
+    response_manager.add_response(order_code, order, carrier, date, time, non_conformity, root_cause, comment, dispatcher)
     response_manager.write_to_excel()
 
 
