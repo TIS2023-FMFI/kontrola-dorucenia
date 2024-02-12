@@ -1,6 +1,8 @@
 import pandas as pd
 from datetime import datetime
-ORDERS_DOCUMENT_PATH = 'website/Databaza_2023_project.xlsm'
+import os
+
+ORDERS_ATTACHMENTS_PATH = 'website/attachments'
 ORDERS_SHEET_NAME = 'databaza'
 CARRIERS_DOCUMENT_PATH = 'website/databaza_dopravcov.xlsx'
 
@@ -8,28 +10,38 @@ CARRIERS_DOCUMENT_PATH = 'website/databaza_dopravcov.xlsx'
 class Order:
 
     def __init__(self, order_code):
-        workbook = pd.read_excel(ORDERS_DOCUMENT_PATH, sheet_name=ORDERS_SHEET_NAME)
-        rows = workbook.loc[workbook['VF'] == order_code]
-
-        if not rows.empty:
-            indices = list(rows.index.values)
-            first_index = indices[0]
-            self.client = rows.loc[first_index, 'CLIENT']
-            self.loading_ctr = rows.loc[first_index, 'LOADING CTR']
-            self.loading_zip = rows.loc[first_index, 'LOADING ZIP']
-            self.loading_city = rows.loc[first_index, 'LOADING CITY']
-            self.loading_date = rows.loc[first_index, 'LOADING DATE']
-            self.loading_time = rows.loc[first_index, 'LOADING TIME']
-            self.delivery_ctr = rows.loc[first_index, 'DELIVERY CTR']
-            self.delivery_zip = rows.loc[first_index, 'DELIVERY ZIP']
-            self.delivery_city = rows.loc[first_index, 'DELIVERY CITY']
-            self.delivery_date = rows.loc[first_index, 'DELIVERY DATE']
-            self.delivery_time = rows.loc[first_index, 'DELIVERY TIME']
-            self.booking_reference = rows.loc[first_index, 'BOOKING REFERENCE']
-            self.truck_plates = rows.loc[first_index, 'TRUCK PLATES']
-            self.carrier = rows.loc[first_index, 'CARRIER']
-            self.vf = rows.loc[first_index, 'VF']
-            self.pic = rows.loc[first_index, 'PIC']
+        
+        for filename in os.listdir(ORDERS_ATTACHMENTS_PATH):
+            
+            workbook = pd.read_excel(f'{ORDERS_ATTACHMENTS_PATH}/{filename}', sheet_name=None)
+            for sheet in workbook.values():
+                
+                try:
+                    rows = sheet.loc[sheet['VF'] == order_code]
+                    if not rows.empty:
+                        
+                        indices = list(rows.index.values)
+                        first_index = indices[0]
+                        self.client = rows.loc[first_index, 'CLIENT']
+                        self.loading_ctr = rows.loc[first_index, 'LOADING CTR']
+                        self.loading_zip = rows.loc[first_index, 'LOADING ZIP']
+                        self.loading_city = rows.loc[first_index, 'LOADING CITY']
+                        self.loading_date = rows.loc[first_index, 'LOADING DATE']
+                        self.loading_time = rows.loc[first_index, 'LOADING TIME']
+                        self.delivery_ctr = rows.loc[first_index, 'DELIVERY CTR']
+                        self.delivery_zip = rows.loc[first_index, 'DELIVERY ZIP']
+                        self.delivery_city = rows.loc[first_index, 'DELIVERY CITY']
+                        self.delivery_date = rows.loc[first_index, 'DELIVERY DATE']
+                        self.delivery_time = rows.loc[first_index, 'DELIVERY TIME']
+                        self.booking_reference = rows.loc[first_index, 'BOOKING REFERENCE']
+                        self.truck_plates = rows.loc[first_index, 'TRUCK PLATES']
+                        self.carrier = rows.loc[first_index, 'CARRIER']
+                        self.vf = rows.loc[first_index, 'VF']
+                        self.pic = rows.loc[first_index, 'PIC']
+                        break
+                    
+                except Exception as e:
+                    print(e)
 
     def exist(self):
         return hasattr(self, 'vf')
