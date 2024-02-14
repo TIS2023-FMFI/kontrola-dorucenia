@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-PATH_TO_ENV = ""
+PATH_TO_ENV = 'website/env'
 load_dotenv(PATH_TO_ENV)
 
 def get_env(key):

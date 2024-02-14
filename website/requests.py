@@ -8,11 +8,15 @@ from .excel import *
 import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from .communication import generate_random_url
-
+from .attachments_download import *
 
 requests = Blueprint('requests', __name__)
 scheduler = BackgroundScheduler(timezone="Europe/Bratislava")
 
+if not scheduler.running:
+    scheduler.start()
+    
+scheduler.add_job(download_attachments, 'cron', hour=5, minute=10)
 
 @requests.route('/create_request_action', methods=['POST'])
 @login_required
