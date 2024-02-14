@@ -1,9 +1,0 @@
-SECRET_KEY = "hs8b9e256co648"
-DB_NAME = "database.db"
-SQLALCHEMY = "sqlite:///database.db"
-MAIL_SERVER = "mail.webglobe.sk"
-MAIL_PORT = 587
-MAIL_USE_TLS = 1
-MAIL_USE_SSL = 0
-MAIL_USERNAME = "ovl-kontrola-dorucenia@gefcoslovakia.sk"
-MAIL_PASSWORD = "FbI;y@c0s2c=GX"
