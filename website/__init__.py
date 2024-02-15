@@ -2,17 +2,19 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
+from .config import get_env
 
 db = SQLAlchemy()
-DB_NAME = "database.db"
+DB_NAME = get_env("DB_NAME")
 
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = b'hs8b9e256co648'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    key = get_env("SECRET_KEY")
+    app.config['SECRET_KEY'] = key.encode()
+    app.config['SQLALCHEMY_DATABASE_URI'] = get_env("SQLALCHEMY")
     db.init_app(app)
-
+    
     from .views import views
     from .authorization import auth
     from .requests import requests
